@@ -383,7 +383,7 @@ const DrawerContent = props => {
               </View>
             </TouchableOpacity>
           </List.Accordion>
-          {/* <List.Accordion
+          <List.Accordion
             title="Counter Order Manager "
             left={props => (
               <List.Icon
@@ -400,13 +400,13 @@ const DrawerContent = props => {
             <TouchableOpacity
               onPress={() => props.navigation.navigate('CounterOrder')}>
               <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconAnt name="user" size={18} />
+                <IconMat name="preview" size={18} />
                 <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
                   Counter Order
                 </Paragraph>
               </View>
             </TouchableOpacity>
-          </List.Accordion> */}
+          </List.Accordion>
           <List.Accordion
             title="Guest Sell Manager "
             left={props => (

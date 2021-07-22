@@ -16,27 +16,22 @@ const ViewCounter = ({navigation}) => {
   const [data, setData] = React.useState([]);
   const from = page * rows;
   const to = Math.min((page + 1) * rows, counters.length);
-
+  var trimStart = page * rows;
+  var trimEnd = trimStart + rows;
   const getCounterList = () => {
     getCounters(setCounters, refreshToken);
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      var trimStart = page * rows;
-      var trimEnd = trimStart + rows;
-      getCounters(setCounters, setData, trimStart, trimEnd, refreshToken);
+      getCounters(setCounters, refreshToken);
     });
     return unsubscribe;
   }, [navigation]);
+
   React.useEffect(() => {
-    setPage(0);
-  }, [navigation, rows]);
-  React.useEffect(() => {
-    var trimStart = page * rows;
-    var trimEnd = trimStart + rows;
     var data = counters.slice(trimStart, trimEnd);
     setData(data);
-  }, [page, rows]);
+  }, [page, rows, counters]);
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -138,8 +133,11 @@ const ViewCounter = ({navigation}) => {
                               navigation={navigation}
                               showEdit={true}
                               editRoute="EditCounter"
-                              showDelete={true}
-                              deleteRoute="delete_counter"
+                              status={item.status}
+                              showEnbDsb={true}
+                              enbdsbRoute="enbdisbcounter"
+                              // showDelete={true}
+                              // deleteRoute="delete_counter"
                               getCounterList={getCounterList}
                             />
                           </DataTable.Cell>

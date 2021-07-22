@@ -1,14 +1,11 @@
 import React, {useEffect, useState, useContext} from 'react';
-
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import ActionMenuCOrder from '../shared/ActionMenuCOrder';
 import IconAnt from 'react-native-vector-icons/AntDesign';
-import {Button, DataTable} from 'react-native-paper';
-import axios from 'axios';
+import {Button, DataTable, Provider} from 'react-native-paper';
 import {
   FlatList,
   ScrollView,
   View,
-  Image,
   StyleSheet,
   Text,
   StatusBar,
@@ -20,10 +17,26 @@ import {getCounterOrders} from '../helpers/dataListHelpers';
 const CounterOrder = ({navigation}) => {
   const [orders, setOrders] = useState([]);
   const {refreshToken} = useContext(AuthContext);
+  const [page, setPage] = React.useState(0);
+  const rowsList = [10, 15, 20];
+  const [rows, onRowsChange] = React.useState(rowsList[0]);
+  const [data, setData] = React.useState([]);
+  const from = page * rows;
+  const to = Math.min((page + 1) * rows, orders.length);
+  var trimStart = page * rows;
+  var trimEnd = trimStart + rows;
+  const getCOrdersList = () => {
+    getCounterOrders(setOrders, refreshToken);
+  };
 
   useEffect(() => {
     getCounterOrders(setOrders, refreshToken);
   }, []);
+
+  React.useEffect(() => {
+    var data = orders.slice(trimStart, trimEnd);
+    setData(data);
+  }, [page, rows, orders]);
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -40,93 +53,129 @@ const CounterOrder = ({navigation}) => {
             Counter Orders
           </Text>
         </View>
-        <DataTable>
-          <ScrollView horizontal>
-            <View>
-              <DataTable.Header>
-                <DataTable.Title style={{width: 50, justifyContent: 'center'}}>
-                  SNo.
-                </DataTable.Title>
-                <DataTable.Title style={{width: 100, justifyContent: 'center'}}>
-                  View Product
-                </DataTable.Title>
-                <DataTable.Title style={{width: 200, justifyContent: 'center'}}>
-                  Branch Name
-                </DataTable.Title>
+        <Provider>
+          <DataTable style={{flex: 1}}>
+            <ScrollView horizontal>
+              <View>
+                <DataTable.Header>
+                  <DataTable.Title
+                    style={{width: 50, justifyContent: 'center'}}>
+                    SNo.
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{width: 100, justifyContent: 'center'}}>
+                    View Product
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{width: 250, justifyContent: 'center'}}>
+                    order id
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{width: 250, justifyContent: 'center'}}>
+                    Action
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{width: 200, justifyContent: 'center'}}>
+                    Branch Name
+                  </DataTable.Title>
 
-                <DataTable.Title style={{width: 100, justifyContent: 'center'}}>
-                  Order Status
-                </DataTable.Title>
-                <DataTable.Title style={{width: 250, justifyContent: 'center'}}>
-                  order id
-                </DataTable.Title>
-                <DataTable.Title style={{width: 250, justifyContent: 'center'}}>
-                  Payment id
-                </DataTable.Title>
-                <DataTable.Title style={{width: 200, justifyContent: 'center'}}>
-                  username
-                </DataTable.Title>
-                <DataTable.Title style={{width: 100, justifyContent: 'center'}}>
-                  mobile
-                </DataTable.Title>
-              </DataTable.Header>
-              <FlatList
-                data={orders}
-                keyExtractor={(item, index) => index}
-                renderItem={({item, index, separators}) => {
-                  return (
-                    <View>
-                      <DataTable.Row>
-                        <DataTable.Cell style={[styles.cellStyle, {width: 50}]}>
-                          {index + 1}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                          style={[styles.cellStyle, {width: 100}]}>
-                          <Button
-                            mode="contained"
-                            color="coral"
-                            onPress={() => {
-                              navigation.navigate('SingleCounterOrder', {
-                                products: item.products,
-                              });
-                            }}>
-                            View
-                          </Button>
-                        </DataTable.Cell>
+                  <DataTable.Title
+                    style={{width: 100, justifyContent: 'center'}}>
+                    Order Status
+                  </DataTable.Title>
 
-                        <DataTable.Cell
-                          style={[styles.cellStyle, {width: 200}]}
-                          numeric>
-                          {item.branchname}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                          style={[styles.cellStyle, {width: 100}]}>
-                          {item.status}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                          style={[styles.cellStyle, {width: 250}]}>
-                          {item.order_id}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                          style={[styles.cellStyle, {width: 250}]}>
-                          {item.payment_id}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                          style={[styles.cellStyle, {width: 200}]}>
-                          {item.username}
-                        </DataTable.Cell>
-                        <DataTable.Cell
-                          style={[styles.cellStyle, {width: 100}]}>
-                          {item.mobile}
-                        </DataTable.Cell>
-                      </DataTable.Row>
-                    </View>
-                  );
-                }}
-              />
-            </View>
-          </ScrollView>
-        </DataTable>
+                  <DataTable.Title
+                    style={{width: 250, justifyContent: 'center'}}>
+                    Payment id
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{width: 200, justifyContent: 'center'}}>
+                    username
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{width: 100, justifyContent: 'center'}}>
+                    mobile
+                  </DataTable.Title>
+                </DataTable.Header>
+                <FlatList
+                  data={data}
+                  keyExtractor={(item, index) => index}
+                  renderItem={({item, index, separators}) => {
+                    return (
+                      <View>
+                        <DataTable.Row>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 50}]}>
+                            {index + 1}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 100}]}>
+                            <Button
+                              mode="contained"
+                              color="coral"
+                              onPress={() => {
+                                navigation.navigate('SingleCounterOrder', {
+                                  products: item.products,
+                                });
+                              }}>
+                              View
+                            </Button>
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 250}]}>
+                            {item.order_id}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 250}]}>
+                            <ActionMenuCOrder
+                              order_id={item.order_id}
+                              status={item.status}
+                              getCOrdersList={getCOrdersList}
+                            />
+                          </DataTable.Cell>
+
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 200}]}
+                            numeric>
+                            {item.branchname}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 100}]}>
+                            {item.status}
+                          </DataTable.Cell>
+
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 250}]}>
+                            {item.payment_id}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 200}]}>
+                            {item.username}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 100}]}>
+                            {item.mobile}
+                          </DataTable.Cell>
+                        </DataTable.Row>
+                      </View>
+                    );
+                  }}
+                />
+              </View>
+            </ScrollView>
+            <DataTable.Pagination
+              page={page}
+              numberOfPages={Math.ceil(orders.length / rows)}
+              onPageChange={page => setPage(page)}
+              label={`${from + 1}-${to} of ${orders.length}`}
+              showFastPaginationControls
+              numberOfItemsPerPageList={rowsList}
+              numberOfItemsPerPage={rows}
+              onItemsPerPageChange={onRowsChange}
+              selectPageDropdownLabel={'Rows per page'}
+            />
+          </DataTable>
+        </Provider>
       </View>
     </>
   );

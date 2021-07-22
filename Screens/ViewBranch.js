@@ -16,28 +16,23 @@ const ViewUser = ({navigation}) => {
   const [data, setData] = React.useState([]);
   const from = page * rows;
   const to = Math.min((page + 1) * rows, branches.length);
-
+  var trimStart = page * rows;
+  var trimEnd = trimStart + rows;
   const getBranchList = () => {
     getBranch(setBranches, refreshToken);
   };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      var trimStart = page * rows;
-      var trimEnd = trimStart + rows;
-      getBranch(setBranches, setData, trimStart, trimEnd, refreshToken);
+      getBranch(setBranches, refreshToken);
     });
     return unsubscribe;
   }, [navigation]);
+
   React.useEffect(() => {
-    setPage(0);
-  }, [navigation, rows]);
-  React.useEffect(() => {
-    var trimStart = page * rows;
-    var trimEnd = trimStart + rows;
     var data = branches.slice(trimStart, trimEnd);
     setData(data);
-  }, [page, rows]);
+  }, [page, rows, branches]);
 
   return (
     <>
@@ -128,8 +123,9 @@ const ViewUser = ({navigation}) => {
                               item={item}
                               showEdit={true}
                               editRoute="EditBranch"
-                              showDelete={true}
-                              deleteRoute="delete_branch"
+                              status={item.status}
+                              showEnbDsb={true}
+                              enbdsbRoute="enbdisbbranch"
                               getBranchList={getBranchList}
                             />
                           </DataTable.Cell>

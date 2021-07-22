@@ -11,7 +11,7 @@ import {
 
 import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
 
-class ActionMenuOrder extends React.PureComponent {
+class ActionMenuCOrder extends React.PureComponent {
   _menu = null;
 
   setMenuRef = ref => {
@@ -26,30 +26,30 @@ class ActionMenuOrder extends React.PureComponent {
     this._menu.show();
   };
 
-  handle_accept = async (order_id, getOrdersList) => {
-    let response = await accept(order_id);
+  handle_accept = async (order_id, getGuestOrdersList) => {
+    let response = await acceptCounter(order_id);
     alert(response[0].message);
-    getOrdersList();
+    getGuestOrdersList();
   };
-  handle_cancle = async (order_id, getOrdersList) => {
+  handle_cancle = async (order_id, getGuestOrdersList) => {
     let response = await cancle(order_id);
     alert(response[0].message);
-    getOrdersList();
+    getGuestOrdersList();
   };
-  handle_preparing = async (order_id, getOrdersList) => {
+  handle_preparing = async (order_id, getGuestOrdersList) => {
     let response = await preparing(order_id);
     alert(response[0].message);
-    getOrdersList();
+    getGuestOrdersList();
   };
-  handle_ready = async (order_id, getOrdersList) => {
+  handle_ready = async (order_id, getGuestOrdersList) => {
     let response = await ready(order_id);
     alert(response[0].message);
-    getOrdersList();
+    getGuestOrdersList();
   };
-  handle_delivered = async (order_id, getOrdersList) => {
+  handle_delivered = async (order_id, getGuestOrdersList) => {
     let response = await delivered(order_id);
     alert(response[0].message);
-    getOrdersList();
+    getGuestOrdersList();
   };
   render() {
     return (
@@ -61,56 +61,54 @@ class ActionMenuOrder extends React.PureComponent {
               Action
             </Button>
           }>
-          {this.props.status == 'Pending' && (
-            <>
-              <MenuItem
-                onPress={() => {
-                  this.hideMenu();
-                  this.handle_accept(
-                    this.props.order_id,
-                    this.props.getOrdersList,
-                  );
-                }}>
-                Accept
-              </MenuItem>
-            </>
-          )}
+          {/* <MenuItem
+            onPress={() => {
+              this.hideMenu();
+              this.handle_accept(
+                this.props.order_id,
+                this.props.getCOrdersList,
+              );
+            }}>
+            Accept
+          </MenuItem> */}
+
           {/* <MenuItem
             onPress={() => {
               this.hideMenu();
               this.handle_preparing(
                 this.props.order_id,
-                this.props.getOrdersList,
+                this.props.getGuestOrdersList,
               );
             }}>
             Preparing
           </MenuItem> */}
-          {(this.props.status == 'Accepted' ||
-            this.props.status == 'Preparing') && (
+
+          {this.props.status == 'Accepted' && (
             <MenuItem
               onPress={() => {
                 this.hideMenu();
                 this.handle_ready(
                   this.props.order_id,
-                  this.props.getOrdersList,
+                  this.props.getGuestOrdersList,
                 );
               }}>
               Ready
             </MenuItem>
           )}
-          {(this.props.status == 'Preparing' ||
-            this.props.status == 'Ready For Delivery') && (
+
+          {this.props.status == 'Ready For Delivery' && (
             <MenuItem
               onPress={() => {
                 this.hideMenu();
                 this.handle_delivered(
                   this.props.order_id,
-                  this.props.getOrdersList,
+                  this.props.getGuestOrdersList,
                 );
               }}>
               Delivered
             </MenuItem>
           )}
+
           {this.props.status == 'Delivered' && (
             <MenuItem
               onPress={() => {
@@ -127,12 +125,13 @@ class ActionMenuOrder extends React.PureComponent {
                 this.hideMenu();
                 this.handle_cancle(
                   this.props.order_id,
-                  this.props.getOrdersList,
+                  this.props.getGuestOrdersList,
                 );
               }}>
               Cancle
             </MenuItem>
           )}
+
           {this.props.status == 'Cancelled' && (
             <MenuItem
               onPress={() => {
@@ -147,4 +146,4 @@ class ActionMenuOrder extends React.PureComponent {
   }
 }
 
-export default ActionMenuOrder;
+export default ActionMenuCOrder;

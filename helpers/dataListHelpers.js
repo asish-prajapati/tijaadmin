@@ -33,11 +33,11 @@ const get_transaction = async (userId, refreshToken) => {
   }
 };
 
-const enbdsbu = async userId => {
+const enbdsbu = async (enbdsbRoute, userId) => {
   let userToken = await AsyncStorage.getItem('token');
   try {
     let response = await axios.get(
-      'http://143.110.244.110/tija/frontuser/enbdisbu',
+      `http://143.110.244.110/tija/frontuser/${enbdsbRoute}`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -62,6 +62,8 @@ const enbdsbu = async userId => {
     if (error.response.status == 500) {
       console.log('500 error');
     }
+    alert(error);
+    console.log(error);
   }
 };
 const delete_ = async (deleteRoute, userId) => {
@@ -97,7 +99,7 @@ const delete_ = async (deleteRoute, userId) => {
   }
 };
 
-const getUser = async (setUsers, setData, trimStart, trimEnd, refreshToken) => {
+const getUser = async (setUsers, refreshToken) => {
   let userToken;
   let userType;
   userToken = await AsyncStorage.getItem('token');
@@ -113,9 +115,9 @@ const getUser = async (setUsers, setData, trimStart, trimEnd, refreshToken) => {
     )
     .then(res => {
       let dataObj = res.data[0].users;
-      var slicedData = dataObj.slice(trimStart, trimEnd);
+      // var slicedData = dataObj.slice(trimStart, trimEnd);
       setUsers(dataObj);
-      setData(slicedData);
+      // setData(slicedData);
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -137,9 +139,9 @@ const getUser = async (setUsers, setData, trimStart, trimEnd, refreshToken) => {
 };
 const getCategory = async (
   setCategory,
-  setData,
-  trimStart,
-  trimEnd,
+  // setData,
+  // trimStart,
+  // trimEnd,
   refreshToken,
 ) => {
   let userToken = await AsyncStorage.getItem('token');
@@ -157,15 +159,15 @@ const getCategory = async (
       let dataObj = res.data[0].category;
 
       if (userType == 'ADM') {
-        var slicedData = dataObj.slice(trimStart, trimEnd);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
         setCategory(dataObj);
-        setData(slicedData);
+        // setData(slicedData);
       }
       if (userType == 'branch') {
         let dataObjCategory = dataObj.filter(item => item.branch_id == userID);
-        var slicedData = dataObjCategory.slice(trimStart, trimEnd);
+        // var slicedData = dataObjCategory.slice(trimStart, trimEnd);
         setCategory(dataObjCategory);
-        setData(slicedData);
+        // setData(slicedData);
       }
     })
     .catch(error => {
@@ -190,9 +192,7 @@ const getCategory = async (
 };
 const getCounters = async (
   setCounters,
-  setData,
-  trimStart,
-  trimEnd,
+
   refreshToken,
 ) => {
   let userToken = await AsyncStorage.getItem('token');
@@ -210,39 +210,38 @@ const getCounters = async (
       let dataObj = res.data[0].counter;
 
       if (userType == 'ADM') {
-        var slicedData = dataObj.slice(trimStart, trimEnd);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
         setCounters(dataObj);
-        setData(slicedData);
+        // setData(slicedData);
       }
       if (userType == 'branch') {
         let dataObjCounter = dataObj.filter(item => item.branch_id == userID);
-        var slicedData = dataObjCounter.slice(trimStart, trimEnd);
+        // var slicedData = dataObjCounter.slice(trimStart, trimEnd);
         setCounters(dataObjCounter);
-        setData(slicedData);
+        // setData(slicedData);
       }
     })
     .catch(error => {
-      console.log(error);
-      // if (error.response.status == 401) {
-      //   const clearAll = async () => {
-      //     try {
-      //       await AsyncStorage.clear();
+      if (error.response.status == 401) {
+        const clearAll = async () => {
+          try {
+            await AsyncStorage.clear();
 
-      //       refreshToken({token: null});
-      //     } catch (e) {
-      //       refreshToken({token: null});
-      //       alert(e);
-      //     }
-      //   };
+            refreshToken({token: null});
+          } catch (e) {
+            refreshToken({token: null});
+            alert(e);
+          }
+        };
 
-      //   clearAll();
+        clearAll();
+      }
+      alert(error);
     });
 };
 const getProducts = async (
   setProducts,
-  setData,
-  trimStart,
-  trimEnd,
+
   refreshToken,
 ) => {
   let userToken = await AsyncStorage.getItem('token');
@@ -262,15 +261,15 @@ const getProducts = async (
 
       if (userType == 'ADM') {
         setProducts(dataObj);
-        var slicedData = dataObj.slice(trimStart, trimEnd);
-        setData(slicedData);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
       }
       if (userType == 'branch') {
         let dataObjProducts = dataObj.filter(item => item.branch_id == userID);
 
         setProducts(dataObjProducts);
-        var slicedData = dataObjProducts.slice(trimStart, trimEnd);
-        setData(slicedData);
+        // var slicedData = dataObjProducts.slice(trimStart, trimEnd);
+        // setData(slicedData);
       }
     })
     .catch(error => {
@@ -288,13 +287,12 @@ const getProducts = async (
 
         clearAll();
       }
+      alert(error);
     });
 };
 const getBranch = async (
   setBranches,
-  setData,
-  trimStart,
-  trimEnd,
+
   refreshToken,
 ) => {
   let userToken;
@@ -312,9 +310,9 @@ const getBranch = async (
     )
     .then(res => {
       let dataObj = res.data[0].branch;
-      var slicedData = dataObj.slice(trimStart, trimEnd);
+      // var slicedData = dataObj.slice(trimStart, trimEnd);
       setBranches(dataObj);
-      setData(slicedData);
+      // setData(slicedData);
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -336,9 +334,7 @@ const getBranch = async (
 
 const getOrders = async (
   setOrders,
-  setData,
-  trimStart,
-  trimEnd,
+
   refreshToken,
 ) => {
   let userToken = await AsyncStorage.getItem('token');
@@ -358,44 +354,42 @@ const getOrders = async (
 
       if (userType == 'ADM') {
         setOrders(dataObj);
-        var slicedData = dataObj.slice(trimStart, trimEnd);
-        setData(slicedData);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
       }
       if (userType == 'branch') {
         let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
 
         setOrders(dataObjOrders);
-        var slicedData = dataObj.slice(trimStart, trimEnd);
-        setData(slicedData);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
       }
     })
     .catch(error => {
-      // if (error.response.status == 401) {
-      //   const clearAll = async () => {
-      //     try {
-      //       await AsyncStorage.clear();
+      if (error.response.status == 401) {
+        const clearAll = async () => {
+          try {
+            await AsyncStorage.clear();
 
-      //       refreshToken({token: null});
-      //     } catch (e) {
-      //       refreshToken({token: null});
-      //       alert(e);
-      //     }
-      //   };
+            refreshToken({token: null});
+          } catch (e) {
+            refreshToken({token: null});
+            alert(e);
+          }
+        };
 
-      //   clearAll();
-      // }
-      // if (error.response.status == 500) {
-      //   console.log('500 error');
-      // }
+        clearAll();
+      }
+      if (error.response.status == 500) {
+        console.log('500 error');
+      }
       alert(error);
     });
 };
 
 const getGuestOrders = async (
   setOrders,
-  setData,
-  trimStart,
-  trimEnd,
+
   refreshToken,
 ) => {
   let userToken = await AsyncStorage.getItem('token');
@@ -412,18 +406,18 @@ const getGuestOrders = async (
     )
     .then(res => {
       let dataObj = res.data[0].orderdata;
-
+      console.log(dataObj);
       if (userType == 'ADM') {
         setOrders(dataObj);
-        var slicedData = dataObj.slice(trimStart, trimEnd);
-        setData(slicedData);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
       }
       if (userType == 'branch') {
         let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
 
         setOrders(dataObjOrders);
-        var slicedData = dataObj.slice(trimStart, trimEnd);
-        setData(slicedData);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
       }
     })
     .catch(error => {
@@ -444,12 +438,17 @@ const getGuestOrders = async (
       if (error.response.status == 500) {
         console.log('500 error');
       }
+      alert(error);
     });
 };
-const getCounterOrders = async (setOrders, refreshToken) => {
-  let userToken;
+const getCounterOrders = async (
+  setOrders,
 
-  userToken = await AsyncStorage.getItem('token');
+  refreshToken,
+) => {
+  let userToken = await AsyncStorage.getItem('token');
+  let userType = await AsyncStorage.getItem('type');
+  let userID = await AsyncStorage.getItem('ID');
 
   axios
     .get(
@@ -462,7 +461,18 @@ const getCounterOrders = async (setOrders, refreshToken) => {
     .then(res => {
       let dataObj = res.data[0].orderdata;
 
-      setOrders(dataObj);
+      if (userType == 'ADM') {
+        setOrders(dataObj);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
+      }
+      if (userType == 'branch') {
+        let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
+
+        setOrders(dataObjOrders);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
+      }
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -482,6 +492,7 @@ const getCounterOrders = async (setOrders, refreshToken) => {
       if (error.response.status == 500) {
         console.log('500 error');
       }
+      alert(error);
     });
 };
 

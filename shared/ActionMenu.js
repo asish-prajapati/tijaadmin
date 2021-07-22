@@ -20,10 +20,32 @@ class ActionMenu extends React.PureComponent {
     this._menu.show();
   };
 
-  handle_enbdsbu = async (userId, getUserList) => {
-    let response = await enbdsbu(userId);
+  handle_enbdsbu = async (
+    enbdsbRoute,
+    userId,
+    getUserList,
+    getCategoryList,
+    getCounterList,
+    getBranchList,
+    getProductList,
+  ) => {
+    let response = await enbdsbu(enbdsbRoute, userId);
+    if (enbdsbRoute == 'enbdisbu') {
+      getUserList();
+    }
+    if (enbdsbRoute == 'enbdisbcategory') {
+      getCategoryList();
+    }
+    if (enbdsbRoute == 'enbdisbcounter') {
+      getCounterList();
+    }
+    if (enbdsbRoute == 'enbdisbbranch') {
+      getBranchList();
+    }
+    if (enbdsbRoute == 'enbdisbproduct') {
+      getProductList();
+    }
     alert(response[0].message);
-    getUserList();
   };
   handle_delete_ = async (
     deleteRoute,
@@ -86,7 +108,16 @@ class ActionMenu extends React.PureComponent {
             <MenuItem
               onPress={() => {
                 this.hideMenu();
-                this.handle_enbdsbu(this.props.item.id, this.props.getUserList);
+                this.handle_enbdsbu(
+                  this.props.enbdsbRoute,
+                  this.props.item.id,
+
+                  this.props.getUserList,
+                  this.props.getCategoryList,
+                  this.props.getCounterList,
+                  this.props.getBranchList,
+                  this.props.getProductList,
+                );
               }}>
               {this.props.status == 0 ? 'enable' : 'disable'}
             </MenuItem>

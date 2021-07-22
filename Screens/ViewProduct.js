@@ -24,23 +24,24 @@ const ViewProduct = ({navigation}) => {
   const [data, setData] = React.useState([]);
   const from = page * rows;
   const to = Math.min((page + 1) * rows, products.length);
+  var trimStart = page * rows;
+  var trimEnd = trimStart + rows;
+
+  const getProductList = () => {
+    getProducts(setProducts, refreshToken);
+  };
+
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      var trimStart = page * rows;
-      var trimEnd = trimStart + rows;
-      getProducts(setProducts, setData, trimStart, trimEnd, refreshToken);
+      getProducts(setProducts, refreshToken);
     });
     return unsubscribe;
   }, [navigation]);
+
   React.useEffect(() => {
-    setPage(0);
-  }, [navigation, rows]);
-  React.useEffect(() => {
-    var trimStart = page * rows;
-    var trimEnd = trimStart + rows;
     var data = products.slice(trimStart, trimEnd);
     setData(data);
-  }, [page, rows]);
+  }, [page, rows, products]);
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -170,6 +171,10 @@ const ViewProduct = ({navigation}) => {
                               navigation={navigation}
                               showEdit={true}
                               editRoute="EditProduct"
+                              status={item.status}
+                              showEnbDsb={true}
+                              enbdsbRoute="enbdisbproduct"
+                              getProductList={getProductList}
                             />
                           </DataTable.Cell>
                         </DataTable.Row>

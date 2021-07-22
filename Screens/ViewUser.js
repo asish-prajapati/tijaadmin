@@ -16,26 +16,22 @@ const ViewUser = ({navigation}) => {
   const [data, setData] = React.useState([]);
   const from = page * rows;
   const to = Math.min((page + 1) * rows, users.length);
+  var trimStart = page * rows;
+  var trimEnd = trimStart + rows;
   const getUserList = () => {
     getUser(setUsers, refreshToken);
   };
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      var trimStart = page * rows;
-      var trimEnd = trimStart + rows;
-      getUser(setUsers, setData, trimStart, trimEnd, refreshToken);
+      getUser(setUsers, refreshToken);
     });
     return unsubscribe;
   }, [navigation]);
+
   React.useEffect(() => {
-    setPage(0);
-  }, [navigation, rows]);
-  React.useEffect(() => {
-    var trimStart = page * rows;
-    var trimEnd = trimStart + rows;
     var data = users.slice(trimStart, trimEnd);
     setData(data);
-  }, [page, rows]);
+  }, [page, rows, users]);
 
   return (
     <>
@@ -127,6 +123,7 @@ const ViewUser = ({navigation}) => {
                               showTrans={true}
                               transactionRoute="UserTransaction"
                               showEnbDsb={true}
+                              enbdsbRoute="enbdisbu"
                               status={item.status}
                               getUserList={getUserList}
                             />

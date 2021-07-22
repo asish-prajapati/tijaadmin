@@ -12,7 +12,7 @@ import {
 
 import {AuthContext} from '../App';
 import {getGuestOrders} from '../helpers/dataListHelpers';
-import ActionMenuOrder from '../shared/ActionMenuOrder';
+import ActionMenuGSOrder from '../shared/ActionMenuGSOrder';
 
 const ViewGuestSell = ({navigation}) => {
   const [orders, setOrders] = useState([]);
@@ -23,28 +23,23 @@ const ViewGuestSell = ({navigation}) => {
   const [data, setData] = React.useState([]);
   const from = page * rows;
   const to = Math.min((page + 1) * rows, orders.length);
-
+  var trimStart = page * rows;
+  var trimEnd = trimStart + rows;
   const getGuestOrdersList = () => {
     getGuestOrders(setOrders, refreshToken);
   };
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      var trimStart = page * rows;
-      var trimEnd = trimStart + rows;
-      getGuestOrders(setOrders, setData, trimStart, trimEnd, refreshToken);
+      getGuestOrders(setOrders, refreshToken);
     });
     return unsubscribe;
-  }, []);
+  }, [navigation]);
+
   React.useEffect(() => {
-    setPage(0);
-  }, [navigation, rows]);
-  React.useEffect(() => {
-    var trimStart = page * rows;
-    var trimEnd = trimStart + rows;
     var data = orders.slice(trimStart, trimEnd);
     setData(data);
-  }, [page, rows]);
+  }, [page, rows, orders]);
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -136,9 +131,10 @@ const ViewGuestSell = ({navigation}) => {
                           </DataTable.Cell>
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 150}]}>
-                            <ActionMenuOrder
+                            <ActionMenuGSOrder
                               order_id={item.order_id}
-                              getOrdersList={getGuestOrdersList}
+                              status={item.status}
+                              getGuestOrdersList={getGuestOrdersList}
                             />
                           </DataTable.Cell>
                           <DataTable.Cell

@@ -23,7 +23,7 @@ import theme from '../theme/theme';
 
 export default function EditCategory({navigation, route}) {
   const {item} = route.params;
-  const [branch, setBranch] = useState('');
+  const [branch, setBranch] = useState(item.branch_id);
   const [name, setName] = useState(item.name);
   const [branchList, setBranchList] = useState([]);
   const [image, setImage] = useState(item.image);
@@ -102,7 +102,7 @@ export default function EditCategory({navigation, route}) {
     const unsubscribe = navigation.addListener('focus', () => {
       getBranch(setUtype, setBranchList, setBranch);
       setName(item.name);
-      setBranch('');
+      setBranch(item.branch_id);
       setImage(item.image);
     });
     return unsubscribe;

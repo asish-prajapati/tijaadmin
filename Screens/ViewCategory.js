@@ -17,28 +17,23 @@ const ViewCategory = ({navigation}) => {
   const [data, setData] = React.useState([]);
   const from = page * rows;
   const to = Math.min((page + 1) * rows, category.length);
+  var trimStart = page * rows;
+  var trimEnd = trimStart + rows;
 
-  let getCategoryList = () => {
+  const getCategoryList = () => {
     getCategory(setCategory, refreshToken);
   };
 
   useEffect(() => {
-    const unsubscribe = navigation.addListener('focus', () => {
-      var trimStart = page * rows;
-      var trimEnd = trimStart + rows;
-      getCategory(setCategory, setData, trimStart, trimEnd, refreshToken);
+    navigation.addListener('focus', async () => {
+      getCategory(setCategory, refreshToken);
     });
-    return unsubscribe;
   }, [navigation]);
+
   React.useEffect(() => {
-    setPage(0);
-  }, [navigation, rows]);
-  React.useEffect(() => {
-    var trimStart = page * rows;
-    var trimEnd = trimStart + rows;
     var data = category.slice(trimStart, trimEnd);
     setData(data);
-  }, [page, rows]);
+  }, [page, rows, category]);
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -121,8 +116,11 @@ const ViewCategory = ({navigation}) => {
                               navigation={navigation}
                               showEdit={true}
                               editRoute="EditCategory"
-                              showDelete={true}
-                              deleteRoute="delete_category"
+                              status={item.status}
+                              showEnbDsb={true}
+                              enbdsbRoute="enbdisbcategory"
+                              // showDelete={true}
+                              // deleteRoute="delete_category"
                               getCategoryList={getCategoryList}
                             />
                           </DataTable.Cell>
@@ -137,9 +135,11 @@ const ViewCategory = ({navigation}) => {
               page={page}
               numberOfPages={Math.ceil(category.length / rows)}
               onPageChange={page => setPage(page)}
-              label={`${from + 1}-${to} of ${category.length}`}
+              label={` Page : ${page + 1} | ${from + 1}-${to} of ${
+                category.length
+              }`}
               showFastPaginationControls
-              numberOfItemsPerPageList={rowsList}
+              // numberOfItemsPerPageList={rowsList}
               numberOfItemsPerPage={rows}
               onItemsPerPageChange={onRowsChange}
               selectPageDropdownLabel={'Rows per page'}
