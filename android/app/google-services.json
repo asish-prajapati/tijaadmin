@@ -1,0 +1,39 @@
+{
+  "project_info": {
+    "project_number": "778559054606",
+    "project_id": "tija-admin",
+    "storage_bucket": "tija-admin.appspot.com"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:778559054606:android:9431e9631745ff94a7ed5f",
+        "android_client_info": {
+          "package_name": "com.tija_adminn"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "778559054606-kbfcqn67ugvua7u9210t5kdb68oulkl2.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyCvcwZEUtznLa-00hX0g5b6rPfRIU9MITo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "778559054606-kbfcqn67ugvua7u9210t5kdb68oulkl2.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
