@@ -13,13 +13,14 @@ import axios from 'axios';
 import LinearGradient from 'react-native-linear-gradient';
 import Snackbar from 'react-native-snackbar';
 import {AuthContext} from '../App';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
   const [password, setPassword] = useState('');
-  const {signIn} = useContext(AuthContext);
-  const loginHandler = () => {
+  const {signIn, refreshToken} = useContext(AuthContext);
+  const loginHandler = async () => {
     const setToken = async token => {
       let userToken;
 
@@ -47,11 +48,24 @@ export default function Login({navigation}) {
         alert('seting ID failed');
       }
     };
+    const getAppid = async () => {
+      let app_id;
+      try {
+        app_id = await AsyncStorage.getItem('app_id');
+        return app_id;
+      } catch (e) {
+        alert('geting token failed');
+      }
+    };
+
     if (/\S+@\S+\.\S+/.test(email)) {
+      const appid = await getAppid();
+      console.log('get-token', appid);
       axios
         .post('http://143.110.244.110/tija/frontuser/loginadmin', {
           email: email,
           password: password,
+          appid: appid,
         })
         .then(res => res.data)
         .then(res => {
@@ -78,6 +92,23 @@ export default function Login({navigation}) {
             setID(id);
             signIn({token});
           }
+        })
+        .catch(error => {
+          if (error.response.status == 401) {
+            const clearAll = async () => {
+              try {
+                await AsyncStorage.clear();
+
+                refreshToken({token: null});
+              } catch (e) {
+                refreshToken({token: null});
+                alert(e);
+              }
+            };
+
+            clearAll();
+          }
+          alert(error);
         });
     } else {
       Snackbar.show({

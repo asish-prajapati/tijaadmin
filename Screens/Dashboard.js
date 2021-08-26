@@ -93,13 +93,13 @@ export default function Dashboard({navigation}) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      let dataObj = await getDash();
-      setDashData({
-        branch: dataObj.totalbranch,
-        counter: dataObj.totalcounter,
-        user: dataObj.totalusers,
-        orders: dataObj.totalorder,
-      });
+      let dataObj = await getDash(refreshToken);
+      // setDashData({
+      //   branch: dataObj.totalbranch,
+      //   counter: dataObj.totalcounter,
+      //   user: dataObj.totalusers,
+      //   orders: dataObj.totalorder,
+      // });
       setLoading(false);
     });
     return unsubscribe;
@@ -126,14 +126,14 @@ export default function Dashboard({navigation}) {
               </Text>
             </View>
             <View style={styles.content}>
-              {dashData.branch && (
+              {dashData.branch ? (
                 <Card
                   title="Total Branch"
                   count={dashData.branch}
                   iconname="code-branch"
                   navigationRoute="ViewBranch"
                 />
-              )}
+              ) : null}
               <Card
                 title="Total Counter"
                 count={dashData.counter}
@@ -141,14 +141,14 @@ export default function Dashboard({navigation}) {
                 navigationRoute="ViewCounter"
               />
 
-              {dashData.user && (
+              {dashData.user ? (
                 <Card
                   title="Total User"
                   count={dashData.user}
                   iconname="users"
                   navigationRoute="ViewUser"
                 />
-              )}
+              ) : null}
               <Card
                 title="Total Orders"
                 count={dashData.orders}

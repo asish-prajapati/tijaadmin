@@ -39,11 +39,11 @@ const DrawerContent = props => {
   const [email, setEmail] = useState('');
   const [image, setImage] = useState('');
 
-  const {signOut} = useContext(AuthContext);
+  const {signOut, refreshToken} = useContext(AuthContext);
   React.useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
       getType(setUtype);
-      getProfile(setName, setEmail, setImage);
+      getProfile(setName, setEmail, setImage, refreshToken);
     });
     return unsubscribe;
   }, [props.navigation]);

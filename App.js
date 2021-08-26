@@ -1,7 +1,7 @@
-import React, {useEffect} from 'react';
+import React, {useEffect, useState} from 'react';
 import {View, Text as TextRN, StyleSheet} from 'react-native';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import messaging from '@react-native-firebase/messaging';
 import {createStackNavigator} from '@react-navigation/stack';
 import {NavigationContainer} from '@react-navigation/native';
 import Login from './Screens/Login';
@@ -10,6 +10,7 @@ import Loading from './Screens/Loading';
 import SingleOrder from './Screens/SingleOrder';
 import SingleCounterOrder from './Screens/SingleCounterOrder';
 import UserTransaction from './Screens/UserTransaction';
+import AwesomeAlert from 'react-native-awesome-alerts';
 
 const AuthContext = React.createContext();
 const StateContext = React.createContext();
@@ -47,7 +48,8 @@ function App() {
         };
     }
   };
-
+  const [alertA, setAlert] = useState(false);
+  const [alertMsg, setAlertMsg] = useState('');
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const authContext = React.useMemo(
@@ -84,10 +86,88 @@ function App() {
 
     startAsync();
   }, []);
+
+  useEffect(() => {
+    // Get the device token
+    messaging()
+      .getToken()
+      .then(async app_id => {
+        let fcmtoken;
+        console.log(app_id);
+        fcmtoken = await AsyncStorage.setItem('app_id', app_id);
+      })
+      .catch(e => {
+        alert(e);
+      });
+
+    // If using other push notification providers (ie Amazon SNS, etc)
+    // you may need to get the APNs token instead for iOS:
+    // if(Platform.OS == 'ios') { messaging().getAPNSToken().then(token => { return saveTokenToDatabase(token); }); }
+
+    // Listen to whether the token changes
+    return messaging().onTokenRefresh(async app_id => {
+      let fcmtoken;
+      fcmtoken = await AsyncStorage.setItem('app_id', app_id);
+    });
+  }, []);
+  messaging().setBackgroundMessageHandler(async remoteMessage => {
+    console.log('Message handled in the background!', remoteMessage);
+  });
+  useEffect(() => {
+    const unsubscribe = messaging().onMessage(async remoteMessage => {
+      // alert(remoteMessage.notification.body);
+      setAlert(true);
+      setAlertMsg(remoteMessage.notification.body);
+      console.log(remoteMessage.notification.body);
+    });
+
+    return unsubscribe;
+  }, []);
+
+  useEffect(() => {
+    // Assume a message-notification contains a "type" property in the data payload of the screen to open
+
+    messaging().onNotificationOpenedApp(remoteMessage => {
+      console.log(
+        'Notification caused app to open from background state:',
+        remoteMessage.notification,
+      );
+      // navigation.navigate(remoteMessage.data.type);
+    });
+
+    // Check whether an initial notification is available
+    messaging()
+      .getInitialNotification()
+      .then(remoteMessage => {
+        if (remoteMessage) {
+          console.log(
+            'Notification caused app to open from quit state:',
+            remoteMessage.notification,
+          );
+          // setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
+        }
+      });
+  }, []);
   return (
     <NavigationContainer>
       <AuthContext.Provider value={authContext}>
         <StateContext.Provider value={{state}}>
+          <AwesomeAlert
+            show={alertA}
+            showProgress={false}
+            title="Wohooo!"
+            message={alertMsg}
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={false}
+            showCancelButton={true}
+            confirmText="Accept"
+            onConfirmPressed={() => {
+              setAlert(false);
+            }}
+            cancelText="OK!"
+            cancelButtonColor="#DD6B55"
+            onCancelPressed={() => setAlert(false)}
+          />
           <Stack.Navigator
             screenOptions={{headerShown: false}}
             initialRouteName="Drawer">
