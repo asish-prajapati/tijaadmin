@@ -30,8 +30,11 @@ const CounterOrder = ({navigation}) => {
   };
 
   useEffect(() => {
-    getCounterOrders(setOrders, refreshToken);
-  }, []);
+    const unsubscribe = navigation.addListener('focus', () => {
+      getCounterOrders(setOrders, refreshToken);
+    });
+    return unsubscribe;
+  }, [navigation]);
 
   React.useEffect(() => {
     var data = orders.slice(trimStart, trimEnd);
@@ -63,12 +66,8 @@ const CounterOrder = ({navigation}) => {
                     SNo.
                   </DataTable.Title>
                   <DataTable.Title
-                    style={{width: 100, justifyContent: 'center'}}>
-                    View Product
-                  </DataTable.Title>
-                  <DataTable.Title
-                    style={{width: 250, justifyContent: 'center'}}>
-                    order id
+                    style={{width: 150, justifyContent: 'center'}}>
+                    Product Name
                   </DataTable.Title>
                   <DataTable.Title
                     style={{width: 250, justifyContent: 'center'}}>
@@ -76,25 +75,22 @@ const CounterOrder = ({navigation}) => {
                   </DataTable.Title>
                   <DataTable.Title
                     style={{width: 200, justifyContent: 'center'}}>
-                    Branch Name
+                    Order Id
                   </DataTable.Title>
 
                   <DataTable.Title
                     style={{width: 100, justifyContent: 'center'}}>
-                    Order Status
+                    Price
                   </DataTable.Title>
 
-                  <DataTable.Title
-                    style={{width: 250, justifyContent: 'center'}}>
-                    Payment id
-                  </DataTable.Title>
                   <DataTable.Title
                     style={{width: 200, justifyContent: 'center'}}>
-                    username
+                    Quantity
                   </DataTable.Title>
+
                   <DataTable.Title
-                    style={{width: 100, justifyContent: 'center'}}>
-                    mobile
+                    style={{width: 300, justifyContent: 'center'}}>
+                    Description
                   </DataTable.Title>
                 </DataTable.Header>
                 <FlatList
@@ -109,52 +105,34 @@ const CounterOrder = ({navigation}) => {
                             {index + 1}
                           </DataTable.Cell>
                           <DataTable.Cell
-                            style={[styles.cellStyle, {width: 100}]}>
-                            <Button
-                              mode="contained"
-                              color="coral"
-                              onPress={() => {
-                                navigation.navigate('SingleCounterOrder', {
-                                  products: item.products,
-                                });
-                              }}>
-                              View
-                            </Button>
-                          </DataTable.Cell>
-                          <DataTable.Cell
-                            style={[styles.cellStyle, {width: 250}]}>
-                            {item.order_id}
+                            style={[styles.cellStyle, {width: 150}]}>
+                            {item.name}
                           </DataTable.Cell>
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 250}]}>
                             <ActionMenuCOrder
-                              order_id={item.order_id}
+                              order_id={item.id}
                               status={item.status}
                               getCOrdersList={getCOrdersList}
                             />
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 200}]}>
+                            {item.order_id}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 100}]}>
+                            {item.price}
                           </DataTable.Cell>
 
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 200}]}
                             numeric>
-                            {item.branchname}
+                            {item.quantity}
                           </DataTable.Cell>
                           <DataTable.Cell
-                            style={[styles.cellStyle, {width: 100}]}>
-                            {item.status}
-                          </DataTable.Cell>
-
-                          <DataTable.Cell
-                            style={[styles.cellStyle, {width: 250}]}>
-                            {item.payment_id}
-                          </DataTable.Cell>
-                          <DataTable.Cell
-                            style={[styles.cellStyle, {width: 200}]}>
-                            {item.username}
-                          </DataTable.Cell>
-                          <DataTable.Cell
-                            style={[styles.cellStyle, {width: 100}]}>
-                            {item.mobile}
+                            style={[styles.cellStyle, {width: 300}]}>
+                            {item.description}
                           </DataTable.Cell>
                         </DataTable.Row>
                       </View>

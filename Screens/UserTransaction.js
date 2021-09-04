@@ -1,7 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react';
 import {get_transaction} from '../helpers/dataListHelpers';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-import IconAnt from 'react-native-vector-icons/AntDesign';
+import IconM from 'react-native-vector-icons/MaterialIcons';
 import {Button, DataTable} from 'react-native-paper';
 
 import axios from 'axios';
@@ -34,15 +34,15 @@ const UserTransaction = ({navigation, route}) => {
       <StatusBar backgroundColor="white" barStyle="dark-content" />
       <View style={styles.container}>
         <View style={styles.header}>
-          <IconAnt
-            name="menu-unfold"
+          <IconM
+            name="arrow-back"
             size={25}
             onPress={() => {
-              navigation.openDrawer();
+              navigation.goBack();
             }}
           />
           <Text style={{fontSize: 20, marginLeft: 30, fontWeight: 'bold'}}>
-            Orders
+            User Transaction
           </Text>
         </View>
         <DataTable>

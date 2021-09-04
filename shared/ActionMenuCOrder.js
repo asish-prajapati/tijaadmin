@@ -1,12 +1,13 @@
 import React from 'react';
 import {View} from 'react-native';
-import {Button} from 'react-native-paper';
+import {Button, Text} from 'react-native-paper';
 import {
   acceptCounter,
   cancle,
   preparing,
   ready,
   delivered,
+  readyCounter,
 } from '../helpers/orderHelpers';
 
 import Menu, {MenuItem, MenuDivider} from 'react-native-material-menu';
@@ -27,6 +28,7 @@ class ActionMenuCOrder extends React.PureComponent {
   };
 
   handle_accept = async (order_id, getCOrdersList) => {
+    console.log(order_id);
     let response = await acceptCounter(order_id);
     alert(response[0].message);
     getCOrdersList();
@@ -42,7 +44,7 @@ class ActionMenuCOrder extends React.PureComponent {
     getCOrdersList();
   };
   handle_ready = async (order_id, getCOrdersList) => {
-    let response = await ready(order_id);
+    let response = await readyCounter(order_id);
     alert(response[0].message);
     getCOrdersList();
   };
@@ -54,93 +56,120 @@ class ActionMenuCOrder extends React.PureComponent {
   render() {
     return (
       <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
-        <Menu
-          ref={this.setMenuRef}
-          button={
-            <Button mode="contained" color="coral" onPress={this.showMenu}>
-              Action
-            </Button>
-          }>
-          {this.props.status == 'Pending' && (
-            <>
-              <MenuItem
-                onPress={() => {
-                  this.hideMenu();
-                  this.handle_accept(
-                    this.props.order_id,
-                    this.props.getCOrdersList,
-                  );
-                }}>
-                Accept
-              </MenuItem>
-            </>
-          )}
-          {/* <MenuItem
+        {this.props.status == 1 && (
+          <Button
+            mode="contained"
+            color="green"
             onPress={() => {
-              this.hideMenu();
-              this.handle_preparing(
+              this.handle_accept(
                 this.props.order_id,
                 this.props.getCOrdersList,
               );
-            }}>
-            Preparing
-          </MenuItem> */}
-          {this.props.status == 'Accepted' && (
-            <MenuItem
-              onPress={() => {
-                this.hideMenu();
-                this.handle_ready(
-                  this.props.order_id,
-                  this.props.getCOrdersList,
-                );
-              }}>
-              Ready
-            </MenuItem>
-          )}
-          {this.props.status == 'Ready For Delivery' && (
-            <MenuItem
-              onPress={() => {
-                this.hideMenu();
-                this.handle_delivered(
-                  this.props.order_id,
-                  this.props.getCOrdersList,
-                );
-              }}>
-              Delivered
-            </MenuItem>
-          )}
-          {this.props.status == 'Delivered' && (
-            <MenuItem
-              onPress={() => {
-                this.hideMenu();
-              }}>
-              Already Delivered
-            </MenuItem>
-          )}
-          <MenuDivider />
-          {this.props.status == 'Delivered' ||
-          this.props.status == 'Cancelled' ? null : (
-            <MenuItem
-              onPress={() => {
-                this.hideMenu();
-                this.handle_cancle(
-                  this.props.order_id,
-                  this.props.getCOrdersList,
-                );
-              }}>
-              Cancle
-            </MenuItem>
-          )}
-          {this.props.status == 'Cancelled' && (
-            <MenuItem
-              onPress={() => {
-                this.hideMenu();
-              }}>
-              Already Cancelled
-            </MenuItem>
-          )}
-        </Menu>
+            }}
+            labelStyle={{color: 'white'}}>
+            Accept
+          </Button>
+        )}
+        {this.props.status == 2 && (
+          <Button
+            mode="contained"
+            color="green"
+            onPress={() => {
+              this.handle_ready(this.props.order_id, this.props.getCOrdersList);
+            }}
+            labelStyle={{color: 'white'}}>
+            Ready
+          </Button>
+        )}
+        {this.props.status == 3 && <Text>Waiting for Delivery</Text>}
+        {this.props.status == 4 && <Text>Delivered</Text>}
       </View>
+      // <View style={{flex: 1, alignItems: 'center', justifyContent: 'center'}}>
+      //   <Menu
+      //     ref={this.setMenuRef}
+      //     button={
+
+      //     }>
+      //     {this.props.status == 'Pending' && (
+      //       <>
+      //         <MenuItem
+      //           onPress={() => {
+      //             this.hideMenu();
+      //             this.handle_accept(
+      //               this.props.order_id,
+      //               this.props.getCOrdersList,
+      //             );
+      //           }}>
+      //           Accept
+      //         </MenuItem>
+      //       </>
+      //     )}
+      //     {/* <MenuItem
+      //       onPress={() => {
+      //         this.hideMenu();
+      //         this.handle_preparing(
+      //           this.props.order_id,
+      //           this.props.getCOrdersList,
+      //         );
+      //       }}>
+      //       Preparing
+      //     </MenuItem> */}
+      //     {this.props.status == 'Accepted' && (
+      //       <MenuItem
+      //         onPress={() => {
+      //           this.hideMenu();
+      //           this.handle_ready(
+      //             this.props.order_id,
+      //             this.props.getCOrdersList,
+      //           );
+      //         }}>
+      //         Ready
+      //       </MenuItem>
+      //     )}
+      //     {this.props.status == 'Ready For Delivery' && (
+      //       <MenuItem
+      //         onPress={() => {
+      //           this.hideMenu();
+      //           this.handle_delivered(
+      //             this.props.order_id,
+      //             this.props.getCOrdersList,
+      //           );
+      //         }}>
+      //         Delivered
+      //       </MenuItem>
+      //     )}
+      //     {this.props.status == 'Delivered' && (
+      //       <MenuItem
+      //         onPress={() => {
+      //           this.hideMenu();
+      //         }}>
+      //         Already Delivered
+      //       </MenuItem>
+      //     )}
+      //     <MenuDivider />
+      //     {this.props.status == 'Delivered' ||
+      //     this.props.status == 'Cancelled' ? null : (
+      //       <MenuItem
+      //         onPress={() => {
+      //           this.hideMenu();
+      //           this.handle_cancle(
+      //             this.props.order_id,
+      //             this.props.getCOrdersList,
+      //           );
+      //         }}>
+      //         Cancle
+      //       </MenuItem>
+      //     )}
+      //     {this.props.status == 'Cancelled' && (
+      //       <MenuItem
+      //         onPress={() => {
+      //           this.hideMenu();
+      //         }}>
+      //         Already Cancelled
+      //       </MenuItem>
+      //     )}
+      //   </Menu>
+      // </View>
     );
   }
 }

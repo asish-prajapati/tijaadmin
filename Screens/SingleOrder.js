@@ -38,6 +38,9 @@ export default function SingleOrder({navigation, route}) {
               <DataTable.Title style={{width: 250, justifyContent: 'center'}}>
                 Description
               </DataTable.Title>
+              <DataTable.Title style={{width: 250, justifyContent: 'center'}}>
+                Status
+              </DataTable.Title>
             </DataTable.Header>
             <FlatList
               data={products}
@@ -50,16 +53,19 @@ export default function SingleOrder({navigation, route}) {
                         {index + 1}
                       </DataTable.Cell>
                       <DataTable.Cell style={[styles.cellStyle, {width: 200}]}>
-                        {item.name}
+                        {item.productname}
                       </DataTable.Cell>
                       <DataTable.Cell style={[styles.cellStyle, {width: 100}]}>
                         {item.price}
                       </DataTable.Cell>
                       <DataTable.Cell style={[styles.cellStyle, {width: 100}]}>
-                        {item.order_quantity}
+                        {item.quantity}
                       </DataTable.Cell>
                       <DataTable.Cell style={[styles.cellStyle, {width: 250}]}>
                         {item.description}
+                      </DataTable.Cell>
+                      <DataTable.Cell style={[styles.cellStyle, {width: 250}]}>
+                        {item.status}
                       </DataTable.Cell>
                     </DataTable.Row>
                   </View>

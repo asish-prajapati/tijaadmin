@@ -70,7 +70,7 @@ const ViewGuestSell = ({navigation}) => {
                     View Product
                   </DataTable.Title>
                   <DataTable.Title
-                    style={{width: 150, justifyContent: 'center'}}>
+                    style={{width: 300, justifyContent: 'center'}}>
                     Action
                   </DataTable.Title>
                   <DataTable.Title
@@ -130,9 +130,9 @@ const ViewGuestSell = ({navigation}) => {
                             </Button>
                           </DataTable.Cell>
                           <DataTable.Cell
-                            style={[styles.cellStyle, {width: 150}]}>
+                            style={[styles.cellStyle, {width: 300}]}>
                             <ActionMenuGSOrder
-                              order_id={item.order_id}
+                              id={item.id}
                               status={item.status}
                               getGuestOrdersList={getGuestOrdersList}
                             />

@@ -1,9 +1,14 @@
 import React, {useEffect, useState} from 'react';
 import {View, Text as TextRN, StyleSheet} from 'react-native';
+
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import {createStackNavigator} from '@react-navigation/stack';
-import {NavigationContainer} from '@react-navigation/native';
+import {
+  NavigationContainer,
+  // createNavigationContainerRef,
+} from '@react-navigation/native';
+
 import Login from './Screens/Login';
 import DrawerNavigator from './navigation/DrawerNavigator';
 import Loading from './Screens/Loading';
@@ -11,9 +16,15 @@ import SingleOrder from './Screens/SingleOrder';
 import SingleCounterOrder from './Screens/SingleCounterOrder';
 import UserTransaction from './Screens/UserTransaction';
 import AwesomeAlert from 'react-native-awesome-alerts';
+import {
+  acceptFromNotification,
+  acceptCounterFromNotification,
+  cancleFromNotification,
+} from './helpers/notificationHelpers';
 
 const AuthContext = React.createContext();
 const StateContext = React.createContext();
+// const navigationRef = createNavigationContainerRef();
 const Stack = createStackNavigator();
 
 function App() {
@@ -48,8 +59,18 @@ function App() {
         };
     }
   };
-  const [alertA, setAlert] = useState(false);
+  // const navigation = useNavigation();
+  const [alertType1, setAlertType1] = useState(false);
+  const [alertType2, setAlertType2] = useState(false);
+  const [alertType3, setAlertType3] = useState(false);
   const [alertMsg, setAlertMsg] = useState('');
+  const [alertTitle, setAlertTitle] = useState('');
+  const [alertLeftText, setAlertLeftText] = useState('');
+  const [initialRoute, setInitialRoute] = useState('Drawer');
+  const [alertRightText, setAlertRightText] = useState('');
+  const [orderid, setorderid] = useState('');
+  const [action1Type, setAction1Type] = useState('');
+  const [action2Type, setAction2Type] = useState('');
   const [state, dispatch] = React.useReducer(reducer, initialState);
 
   const authContext = React.useMemo(
@@ -111,14 +132,72 @@ function App() {
     });
   }, []);
   messaging().setBackgroundMessageHandler(async remoteMessage => {
-    console.log('Message handled in the background!', remoteMessage);
+    console.log(
+      'Message handled in the background!',
+      remoteMessage.data['action'],
+    );
+    setInitialRoute('ViewOrder');
   });
+  const handleAction1 = async () => {
+    if (action1Type == 'handle1') {
+      console.log('clicked for accept branch/admin');
+      console.log(orderid);
+      let response = acceptFromNotification(orderid);
+      console.log(response);
+      setInitialRoute('ViewOrder');
+      // if (navigationRef.isReady()) {
+      //   navigationRef.navigate('ViewOrder');
+      // }
+    } else if (action1Type == 'handle2') {
+      console.log('clicked for Accept counter');
+      let response = await acceptCounterFromNotification(orderid);
+      console.log(response);
+      setInitialRoute('ViewOrder');
+
+      // if (navigationRef.isReady()) {
+      //   navigationRef.navigate('ViewOrder');
+      // }
+    }
+  };
+  const handleAction2 = async () => {
+    let response = await cancleFromNotification(orderid);
+    console.log(response);
+  };
   useEffect(() => {
     const unsubscribe = messaging().onMessage(async remoteMessage => {
-      // alert(remoteMessage.notification.body);
-      setAlert(true);
+      let alertType = remoteMessage.data['type'];
+      let action1 = remoteMessage.data['action1'];
+      let action2 = remoteMessage.data['action2'];
+      let orderid = remoteMessage.data['orderId'];
+      let msg = remoteMessage.notification.body;
+      let title = remoteMessage.notification.title;
+
+      if (alertType == 'type1' && action1 == 1) {
+        setAlertType1(true);
+        setAlertLeftText('Accept');
+        setorderid(orderid);
+        setAction1Type('handle1');
+        setAlertMsg(msg);
+        setAlertTitle(title);
+      } else if (alertType == 'type2' && action1 == 1) {
+        setAlertType2(true);
+        setAlertLeftText('Accept');
+        setorderid(orderid);
+        setAlertMsg(msg);
+        setAlertTitle(title);
+        setAction1Type('handle2');
+      } else if (alertType == 'type3') {
+        setAlertMsg(msg);
+        setAlertTitle(title);
+        setAlertType3(true);
+      }
+
       setAlertMsg(remoteMessage.notification.body);
-      console.log(remoteMessage.notification.body);
+      // setAlertLeftText(remoteMessage.data['accept']);
+      // // setAlertLeftUrl(remoteMessage.data['']);
+      // setAlertRightText(remoteMessage.data['cancle']);
+      console.log(remoteMessage);
+      setInitialRoute('ViewOrder');
     });
 
     return unsubscribe;
@@ -130,8 +209,9 @@ function App() {
     messaging().onNotificationOpenedApp(remoteMessage => {
       console.log(
         'Notification caused app to open from background state:',
-        remoteMessage.notification,
+        remoteMessage.data['action'],
       );
+      setInitialRoute('ViewOrder');
       // navigation.navigate(remoteMessage.data.type);
     });
 
@@ -144,6 +224,7 @@ function App() {
             'Notification caused app to open from quit state:',
             remoteMessage.notification,
           );
+          setInitialRoute('ViewOrder');
           // setInitialRoute(remoteMessage.data.type); // e.g. "Settings"
         }
       });
@@ -153,24 +234,63 @@ function App() {
       <AuthContext.Provider value={authContext}>
         <StateContext.Provider value={{state}}>
           <AwesomeAlert
-            show={alertA}
+            show={alertType1}
             showProgress={false}
-            title="Wohooo!"
+            title={alertTitle}
             message={alertMsg}
             closeOnTouchOutside={true}
             closeOnHardwareBackPress={false}
             showCancelButton={true}
-            confirmText="Accept"
+            showConfirmButton={true}
+            confirmText={alertLeftText}
             onConfirmPressed={() => {
-              setAlert(false);
+              handleAction1();
+              setAlertType1(false);
             }}
-            cancelText="OK!"
+            cancelText="Cancle"
             cancelButtonColor="#DD6B55"
-            onCancelPressed={() => setAlert(false)}
+            onCancelPressed={() => {
+              handleAction2();
+              setAlertType1(false);
+            }}
+          />
+          <AwesomeAlert
+            show={alertType2}
+            showProgress={false}
+            title={alertTitle}
+            message={alertMsg}
+            closeOnTouchOutside={true}
+            closeOnHardwareBackPress={false}
+            showCancelButton={false}
+            showConfirmButton={true}
+            confirmText={alertLeftText}
+            onConfirmPressed={() => {
+              handleAction1();
+              setAlertType2(false);
+            }}
+            cancelText={alertRightText}
+            cancelButtonColor="#DD6B55"
+            onCancelPressed={() => setAlertType2(false)}
+          />
+          <AwesomeAlert
+            show={alertType3}
+            showProgress={false}
+            title={alertTitle}
+            message={alertMsg}
+            closeOnTouchOutside={false}
+            closeOnHardwareBackPress={false}
+            showCancelButton={false}
+            showConfirmButton={true}
+            confirmText="ok"
+            onConfirmPressed={() => {
+              setAlertType3(false);
+            }}
+            cancelButtonColor="#DD6B55"
+            onCancelPressed={() => setAlertType3(false)}
           />
           <Stack.Navigator
             screenOptions={{headerShown: false}}
-            initialRouteName="Drawer">
+            initialRouteName={initialRoute}>
             {state.isLoading ? (
               <Stack.Screen name="Loading" component={Loading} />
             ) : !state.userToken ? (

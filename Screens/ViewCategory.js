@@ -119,8 +119,8 @@ const ViewCategory = ({navigation}) => {
                               status={item.status}
                               showEnbDsb={true}
                               enbdsbRoute="enbdisbcategory"
-                              // showDelete={true}
-                              // deleteRoute="delete_category"
+                              showDelete={true}
+                              deleteRoute="delete_category"
                               getCategoryList={getCategoryList}
                             />
                           </DataTable.Cell>

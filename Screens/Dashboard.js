@@ -1,4 +1,6 @@
 import React, {useEffect, useContext, useState} from 'react';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {
   View,
   StyleSheet,
@@ -24,6 +26,7 @@ export default function Dashboard({navigation}) {
     orders: 0,
   });
   const [loading, setLoading] = useState(true);
+  const [uType, setUtype] = useState('');
   const Card = props => {
     const {title, count, iconname, navigationRoute} = props;
     return (
@@ -93,14 +96,21 @@ export default function Dashboard({navigation}) {
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
-      let dataObj = await getDash(refreshToken);
-      // setDashData({
-      //   branch: dataObj.totalbranch,
-      //   counter: dataObj.totalcounter,
-      //   user: dataObj.totalusers,
-      //   orders: dataObj.totalorder,
-      // });
-      setLoading(false);
+      try {
+        let userType = await AsyncStorage.getItem('type');
+        await setUtype(userType);
+        let dataObj = await getDash(refreshToken);
+        setDashData({
+          branch: dataObj.totalbranch,
+          counter: dataObj.totalcounter,
+          user: dataObj.totalusers,
+          orders: dataObj.totalorder,
+          // counterOrders:dataObj.totalcounterorder
+        });
+        setLoading(false);
+      } catch {
+        alert('Error in Dashboard api');
+      }
     });
     return unsubscribe;
   }, []);
@@ -126,35 +136,74 @@ export default function Dashboard({navigation}) {
               </Text>
             </View>
             <View style={styles.content}>
-              {dashData.branch ? (
-                <Card
-                  title="Total Branch"
-                  count={dashData.branch}
-                  iconname="code-branch"
-                  navigationRoute="ViewBranch"
-                />
+              {uType == 'ADM' ? (
+                dashData.branch > 0 ? (
+                  <Card
+                    title="Total Branch"
+                    count={dashData.branch}
+                    iconname="code-branch"
+                    navigationRoute="ViewBranch"
+                  />
+                ) : (
+                  <Card
+                    title="Total Branch"
+                    count={0}
+                    iconname="code-branch"
+                    navigationRoute="ViewBranch"
+                  />
+                )
               ) : null}
-              <Card
-                title="Total Counter"
-                count={dashData.counter}
-                iconname="address-card"
-                navigationRoute="ViewCounter"
-              />
-
-              {dashData.user ? (
-                <Card
-                  title="Total User"
-                  count={dashData.user}
-                  iconname="users"
-                  navigationRoute="ViewUser"
-                />
+              {uType == 'ADM' || uType == 'branch' ? (
+                dashData.counter > 0 ? (
+                  <Card
+                    title="Total Counter"
+                    count={dashData.counter}
+                    iconname="address-card"
+                    navigationRoute="ViewCounter"
+                  />
+                ) : (
+                  <Card
+                    title="Total Counter"
+                    count={0}
+                    iconname="address-card"
+                    navigationRoute="ViewCounter"
+                  />
+                )
               ) : null}
-              <Card
-                title="Total Orders"
-                count={dashData.orders}
-                iconname="shopping-cart"
-                navigationRoute="ViewOrder"
-              />
+              {uType == 'ADM' ? (
+                dashData.user > 0 ? (
+                  <Card
+                    title="Total User"
+                    count={dashData.user}
+                    iconname="users"
+                    navigationRoute="ViewUser"
+                  />
+                ) : (
+                  <Card
+                    title="Total User"
+                    count={0}
+                    iconname="users"
+                    navigationRoute="ViewUser"
+                  />
+                )
+              ) : null}
+              {dashData.orders > 0 ? (
+                <Card
+                  title="Total Orders"
+                  count={dashData.orders}
+                  iconname="shopping-cart"
+                  navigationRoute={
+                    uType == 'counter' ? 'CounterOrder' : 'ViewOrder'
+                  }
+                />
+              ) : (
+                <Card
+                  title="Total Orders"
+                  count={0}
+                  iconname="shopping-cart"
+                  navigationRoute="ViewOrder"
+                />
+              )}
             </View>
           </View>
         </>

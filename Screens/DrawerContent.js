@@ -257,189 +257,194 @@ const DrawerContent = props => {
               </TouchableOpacity>
             </List.Accordion>
           )}
-          <List.Accordion
-            title="Counter Manager "
-            left={props => (
-              <List.Icon
-                {...props}
-                color={counterExpended ? 'coral' : 'black'}
-                icon="folder"
-              />
-            )}
-            titleStyle={{color: counterExpended ? 'coral' : 'black'}}
-            expanded={counterExpended}
-            onPress={() => {
-              handleExpend('counter');
-            }}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('AddCounter')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconEnt name="add-to-list" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  Add Counter
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('ViewCounter')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconMat name="preview" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  View Counter
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-          </List.Accordion>
-
-          <List.Accordion
-            title="Category Manager "
-            left={props => (
-              <List.Icon
-                {...props}
-                color={categoryExpended ? 'coral' : 'black'}
-                icon="folder"
-              />
-            )}
-            titleStyle={{color: categoryExpended ? 'coral' : 'black'}}
-            expanded={categoryExpended}
-            onPress={() => {
-              handleExpend('category');
-            }}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('AddCategory')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconEnt name="add-to-list" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  Add Category
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('ViewCategory')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconMat name="preview" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  View Category
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-          </List.Accordion>
-
-          <List.Accordion
-            title="Product Manager "
-            left={props => (
-              <List.Icon
-                {...props}
-                color={productExpended ? 'coral' : 'black'}
-                icon="folder"
-              />
-            )}
-            titleStyle={{color: productExpended ? 'coral' : 'black'}}
-            expanded={productExpended}
-            onPress={() => {
-              handleExpend('product');
-            }}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('AddProduct')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconEnt name="add-to-list" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  Add Product
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('ViewProduct')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconMat name="preview" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  View Product
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-          </List.Accordion>
-
-          <List.Accordion
-            title="Order Manager "
-            left={props => (
-              <List.Icon
-                {...props}
-                color={orderExpended ? 'coral' : 'black'}
-                icon="folder"
-              />
-            )}
-            titleStyle={{color: orderExpended ? 'coral' : 'black'}}
-            expanded={orderExpended}
-            onPress={() => {
-              handleExpend('order');
-            }}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('ViewOrder')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconMat name="preview" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  View Order
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-          </List.Accordion>
-          <List.Accordion
-            title="Counter Order Manager "
-            left={props => (
-              <List.Icon
-                {...props}
-                color={counterOrderExpended ? 'coral' : 'black'}
-                icon="folder"
-              />
-            )}
-            titleStyle={{color: counterOrderExpended ? 'coral' : 'black'}}
-            expanded={counterOrderExpended}
-            onPress={() => {
-              handleExpend('counterOrder');
-            }}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('CounterOrder')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconMat name="preview" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  Counter Order
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-          </List.Accordion>
-          <List.Accordion
-            title="Guest Sell Manager "
-            left={props => (
-              <List.Icon
-                {...props}
-                color={sellExpended ? 'coral' : 'black'}
-                icon="folder"
-              />
-            )}
-            titleStyle={{color: sellExpended ? 'coral' : 'black'}}
-            expanded={sellExpended}
-            onPress={() => {
-              handleExpend('sell');
-            }}>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('SellProduct')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconEnt name="add-to-list" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  Sell Product
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-            <TouchableOpacity
-              onPress={() => props.navigation.navigate('ViewGuestSell')}>
-              <View style={{flexDirection: 'row', paddingVertical: 15}}>
-                <IconMat name="preview" size={18} />
-                <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
-                  View Guest Sell
-                </Paragraph>
-              </View>
-            </TouchableOpacity>
-          </List.Accordion>
+          {(utype === 'ADM' || utype === 'branch') && (
+            <>
+              <List.Accordion
+                title="Counter Manager "
+                left={props => (
+                  <List.Icon
+                    {...props}
+                    color={counterExpended ? 'coral' : 'black'}
+                    icon="folder"
+                  />
+                )}
+                titleStyle={{color: counterExpended ? 'coral' : 'black'}}
+                expanded={counterExpended}
+                onPress={() => {
+                  handleExpend('counter');
+                }}>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('AddCounter')}>
+                  <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                    <IconEnt name="add-to-list" size={18} />
+                    <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                      Add Counter
+                    </Paragraph>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('ViewCounter')}>
+                  <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                    <IconMat name="preview" size={18} />
+                    <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                      View Counter
+                    </Paragraph>
+                  </View>
+                </TouchableOpacity>
+              </List.Accordion>
+              <List.Accordion
+                title="Category Manager "
+                left={props => (
+                  <List.Icon
+                    {...props}
+                    color={categoryExpended ? 'coral' : 'black'}
+                    icon="folder"
+                  />
+                )}
+                titleStyle={{color: categoryExpended ? 'coral' : 'black'}}
+                expanded={categoryExpended}
+                onPress={() => {
+                  handleExpend('category');
+                }}>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('AddCategory')}>
+                  <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                    <IconEnt name="add-to-list" size={18} />
+                    <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                      Add Category
+                    </Paragraph>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('ViewCategory')}>
+                  <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                    <IconMat name="preview" size={18} />
+                    <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                      View Category
+                    </Paragraph>
+                  </View>
+                </TouchableOpacity>
+              </List.Accordion>
+              <List.Accordion
+                title="Product Manager "
+                left={props => (
+                  <List.Icon
+                    {...props}
+                    color={productExpended ? 'coral' : 'black'}
+                    icon="folder"
+                  />
+                )}
+                titleStyle={{color: productExpended ? 'coral' : 'black'}}
+                expanded={productExpended}
+                onPress={() => {
+                  handleExpend('product');
+                }}>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('AddProduct')}>
+                  <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                    <IconEnt name="add-to-list" size={18} />
+                    <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                      Add Product
+                    </Paragraph>
+                  </View>
+                </TouchableOpacity>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('ViewProduct')}>
+                  <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                    <IconMat name="preview" size={18} />
+                    <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                      View Product
+                    </Paragraph>
+                  </View>
+                </TouchableOpacity>
+              </List.Accordion>
+              <List.Accordion
+                title="Order Manager "
+                left={props => (
+                  <List.Icon
+                    {...props}
+                    color={orderExpended ? 'coral' : 'black'}
+                    icon="folder"
+                  />
+                )}
+                titleStyle={{color: orderExpended ? 'coral' : 'black'}}
+                expanded={orderExpended}
+                onPress={() => {
+                  handleExpend('order');
+                }}>
+                <TouchableOpacity
+                  onPress={() => props.navigation.navigate('ViewOrder')}>
+                  <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                    <IconMat name="preview" size={18} />
+                    <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                      View Order
+                    </Paragraph>
+                  </View>
+                </TouchableOpacity>
+              </List.Accordion>
+            </>
+          )}
+          {(utype === 'ADM' || utype === 'branch' || utype === 'counter') && (
+            <List.Accordion
+              title="Counter Order Manager "
+              left={props => (
+                <List.Icon
+                  {...props}
+                  color={counterOrderExpended ? 'coral' : 'black'}
+                  icon="folder"
+                />
+              )}
+              titleStyle={{color: counterOrderExpended ? 'coral' : 'black'}}
+              expanded={counterOrderExpended}
+              onPress={() => {
+                handleExpend('counterOrder');
+              }}>
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('CounterOrder')}>
+                <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                  <IconMat name="preview" size={18} />
+                  <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                    Counter Order
+                  </Paragraph>
+                </View>
+              </TouchableOpacity>
+            </List.Accordion>
+          )}
+          {(utype === 'ADM' || utype === 'branch') && (
+            <List.Accordion
+              title="Guest Sell Manager "
+              left={props => (
+                <List.Icon
+                  {...props}
+                  color={sellExpended ? 'coral' : 'black'}
+                  icon="folder"
+                />
+              )}
+              titleStyle={{color: sellExpended ? 'coral' : 'black'}}
+              expanded={sellExpended}
+              onPress={() => {
+                handleExpend('sell');
+              }}>
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('SellProduct')}>
+                <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                  <IconEnt name="add-to-list" size={18} />
+                  <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                    Sell Product
+                  </Paragraph>
+                </View>
+              </TouchableOpacity>
+              <TouchableOpacity
+                onPress={() => props.navigation.navigate('ViewGuestSell')}>
+                <View style={{flexDirection: 'row', paddingVertical: 15}}>
+                  <IconMat name="preview" size={18} />
+                  <Paragraph style={{paddingLeft: 10, fontSize: 15}}>
+                    View Guest Sell
+                  </Paragraph>
+                </View>
+              </TouchableOpacity>
+            </List.Accordion>
+          )}
         </Drawer.Section>
         <Drawer.Section>
           <TouchableRipple

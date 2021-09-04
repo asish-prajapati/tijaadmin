@@ -126,6 +126,8 @@ const ViewUser = ({navigation}) => {
                               status={item.status}
                               showEnbDsb={true}
                               enbdsbRoute="enbdisbbranch"
+                              showDelete={true}
+                              deleteRoute="delete_branch"
                               getBranchList={getBranchList}
                             />
                           </DataTable.Cell>

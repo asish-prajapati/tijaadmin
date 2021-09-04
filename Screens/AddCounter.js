@@ -12,7 +12,11 @@ import IconAnt from 'react-native-vector-icons/AntDesign';
 import {TextInput, Button} from 'react-native-paper';
 import {launchCamera, launchImageLibrary} from 'react-native-image-picker';
 import AwesomeAlert from 'react-native-awesome-alerts';
-import {getBranch} from '../helpers/addFromHelpers';
+import {
+  getBranch,
+  getBranchAndCat,
+  onBranchChange,
+} from '../helpers/addFromHelpers';
 import {CreateScreenStyle} from '../globalStyles';
 import {Picker} from '@react-native-picker/picker';
 import theme from '../theme/theme';
@@ -21,6 +25,8 @@ import {create_counter} from '../helpers/addFromHelpers';
 export default function AddCounter({navigation}) {
   const [branch, setBranch] = useState('');
   const [branchList, setBranchList] = useState([]);
+  const [catList, setCatList] = useState([]);
+  const [category, setCategory] = useState('');
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
   const [mobile, setMobile] = useState('');
@@ -59,6 +65,7 @@ export default function AddCounter({navigation}) {
     } else {
       const body = {
         branch_id: branch,
+        category_id: category,
         email: email,
         password: password,
         name: name,
@@ -70,6 +77,7 @@ export default function AddCounter({navigation}) {
       if (response[0].success == true) {
         setName('');
         setBranch('');
+        setCategory();
         setEmail('');
         setMobile('');
         setImage('');
@@ -84,10 +92,11 @@ export default function AddCounter({navigation}) {
 
   React.useEffect(() => {
     const unsubscribe = navigation.addListener('focus', () => {
-      getBranch(setUtype, setBranchList, setBranch);
+      getBranchAndCat(setUtype, setBranchList, setBranch, setCatList);
     });
     return unsubscribe;
   }, [navigation]);
+
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
@@ -122,10 +131,35 @@ export default function AddCounter({navigation}) {
                   mode="dropdown"
                   selectedValue={branch}
                   onValueChange={(itemValue, itemIndex) => {
-                    setBranch(itemValue);
+                    onBranchChange(itemValue, setBranch, setCatList);
                   }}>
                   <Picker.Item label="Select Branch" value="" color="grey" />
                   {branchList?.map(item => (
+                    <Picker.Item
+                      label={item.name}
+                      value={item.id}
+                      key={item.id}
+                    />
+                  ))}
+                </Picker>
+              </View>
+            )}
+            {(utype === 'branch' || utype === 'ADM') && (
+              <View
+                style={{
+                  borderWidth: 1,
+                  borderColor: 'grey',
+                  borderRadius: 3,
+                  marginBottom: 10,
+                }}>
+                <Picker
+                  mode="dropdown"
+                  selectedValue={category}
+                  onValueChange={(itemValue, itemIndex) => {
+                    setCategory(itemValue);
+                  }}>
+                  <Picker.Item label="Select Category" value="" color="grey" />
+                  {catList?.map(item => (
                     <Picker.Item
                       label={item.name}
                       value={item.id}

@@ -1,6 +1,7 @@
 import React, {useEffect, useState, useContext} from 'react';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {Button, DataTable, Provider} from 'react-native-paper';
+
 import {
   FlatList,
   ScrollView,
@@ -8,6 +9,7 @@ import {
   StyleSheet,
   Text,
   StatusBar,
+  RefreshControl,
 } from 'react-native';
 
 import {AuthContext} from '../App';
@@ -17,10 +19,12 @@ import ActionMenuOrder from '../shared/ActionMenuOrder';
 const ViewOrder = ({navigation}) => {
   const [orders, setOrders] = useState([]);
   const {refreshToken} = useContext(AuthContext);
+  const [refreshing, setRefreshing] = React.useState(false);
   const [page, setPage] = React.useState(0);
   const rowsList = [10, 15, 20];
   const [rows, onRowsChange] = React.useState(rowsList[0]);
   const [data, setData] = React.useState([]);
+
   const from = page * rows;
   const to = Math.min((page + 1) * rows, orders.length);
   var trimStart = page * rows;
@@ -70,7 +74,12 @@ const ViewOrder = ({navigation}) => {
                     View Product
                   </DataTable.Title>
                   <DataTable.Title
-                    style={{width: 150, justifyContent: 'center'}}>
+                    style={{
+                      width: 300,
+                      flex: 1,
+                      justifyContent: 'center',
+                      alignItems: 'center',
+                    }}>
                     Action
                   </DataTable.Title>
                   <DataTable.Title
@@ -84,10 +93,10 @@ const ViewOrder = ({navigation}) => {
                     }}>
                     Branch Name
                   </DataTable.Title>
-                  <DataTable.Title
+                  {/* <DataTable.Title
                     style={{width: 150, justifyContent: 'center'}}>
                     Order Status
-                  </DataTable.Title>
+                  </DataTable.Title> */}
                   <DataTable.Title
                     style={{width: 200, justifyContent: 'center'}}>
                     order id
@@ -130,9 +139,9 @@ const ViewOrder = ({navigation}) => {
                             </Button>
                           </DataTable.Cell>
                           <DataTable.Cell
-                            style={[styles.cellStyle, {width: 150}]}>
+                            style={[styles.cellStyle, {width: 300}]}>
                             <ActionMenuOrder
-                              order_id={item.order_id}
+                              id={item.id}
                               status={item.status}
                               getOrdersList={getOrdersList}
                             />
@@ -147,10 +156,10 @@ const ViewOrder = ({navigation}) => {
                             numeric>
                             {item.branchname}
                           </DataTable.Cell>
-                          <DataTable.Cell
+                          {/* <DataTable.Cell
                             style={[styles.cellStyle, {width: 150}]}>
                             {item.status}
-                          </DataTable.Cell>
+                          </DataTable.Cell> */}
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 200}]}>
                             {item.order_id}

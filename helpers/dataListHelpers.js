@@ -13,6 +13,7 @@ const get_transaction = async (userId, refreshToken) => {
       },
     );
     response = await response.data;
+    console.log(response);
     return response;
   } catch (error) {
     if (error.response.status == 401) {
@@ -115,6 +116,7 @@ const getUser = async (setUsers, refreshToken) => {
     )
     .then(res => {
       let dataObj = res.data[0].users;
+      console.log(dataObj);
       // var slicedData = dataObj.slice(trimStart, trimEnd);
       setUsers(dataObj);
       // setData(slicedData);
@@ -157,18 +159,18 @@ const getCategory = async (
     )
     .then(res => {
       let dataObj = res.data[0].category;
-
-      if (userType == 'ADM') {
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        setCategory(dataObj);
-        // setData(slicedData);
-      }
-      if (userType == 'branch') {
-        let dataObjCategory = dataObj.filter(item => item.branch_id == userID);
-        // var slicedData = dataObjCategory.slice(trimStart, trimEnd);
-        setCategory(dataObjCategory);
-        // setData(slicedData);
-      }
+      setCategory(dataObj);
+      // if (userType == 'ADM') {
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   setCategory(dataObj);
+      //   // setData(slicedData);
+      // }
+      // if (userType == 'branch') {
+      //   let dataObjCategory = dataObj.filter(item => item.branch_id == userID);
+      //   // var slicedData = dataObjCategory.slice(trimStart, trimEnd);
+      //   setCategory(dataObjCategory);
+      //   // setData(slicedData);
+      // }
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -208,18 +210,18 @@ const getCounters = async (
     )
     .then(res => {
       let dataObj = res.data[0].counter;
-
-      if (userType == 'ADM') {
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        setCounters(dataObj);
-        // setData(slicedData);
-      }
-      if (userType == 'branch') {
-        let dataObjCounter = dataObj.filter(item => item.branch_id == userID);
-        // var slicedData = dataObjCounter.slice(trimStart, trimEnd);
-        setCounters(dataObjCounter);
-        // setData(slicedData);
-      }
+      setCounters(dataObj);
+      // if (userType == 'ADM') {
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   setCounters(dataObj);
+      //   // setData(slicedData);
+      // }
+      // if (userType == 'branch') {
+      //   let dataObjCounter = dataObj.filter(item => item.branch_id == userID);
+      //   // var slicedData = dataObjCounter.slice(trimStart, trimEnd);
+      //   setCounters(dataObjCounter);
+      //   // setData(slicedData);
+      // }
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -258,19 +260,19 @@ const getProducts = async (
     )
     .then(res => {
       let dataObj = res.data[0].product;
+      setProducts(dataObj);
+      // if (userType == 'ADM') {
+      //   setProducts(dataObj);
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
+      // if (userType == 'branch') {
+      //   let dataObjProducts = dataObj.filter(item => item.branch_id == userID);
 
-      if (userType == 'ADM') {
-        setProducts(dataObj);
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
-      if (userType == 'branch') {
-        let dataObjProducts = dataObj.filter(item => item.branch_id == userID);
-
-        setProducts(dataObjProducts);
-        // var slicedData = dataObjProducts.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
+      //   setProducts(dataObjProducts);
+      //   // var slicedData = dataObjProducts.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -340,6 +342,7 @@ const getOrders = async (
   let userToken = await AsyncStorage.getItem('token');
   let userType = await AsyncStorage.getItem('type');
   let userID = await AsyncStorage.getItem('ID');
+  console.log(userToken);
 
   axios
     .get(
@@ -351,40 +354,42 @@ const getOrders = async (
     )
     .then(res => {
       let dataObj = res.data[0].orderdata;
+      console.log(dataObj);
 
-      if (userType == 'ADM') {
-        setOrders(dataObj);
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
-      if (userType == 'branch') {
-        let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
+      setOrders(dataObj);
+      // if (userType == 'ADM') {
+      //   setOrders(dataObj);
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
+      // if (userType == 'branch') {
+      //   let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
 
-        setOrders(dataObjOrders);
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
-    })
-    .catch(error => {
-      if (error.response.status == 401) {
-        const clearAll = async () => {
-          try {
-            await AsyncStorage.clear();
-
-            refreshToken({token: null});
-          } catch (e) {
-            refreshToken({token: null});
-            alert(e);
-          }
-        };
-
-        clearAll();
-      }
-      if (error.response.status == 500) {
-        console.log('500 error');
-      }
-      alert(error);
+      //   setOrders(dataObjOrders);
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
     });
+  // .catch(error => {
+  //   if (error.response.status == 401) {
+  //     const clearAll = async () => {
+  //       try {
+  //         await AsyncStorage.clear();
+
+  //         refreshToken({token: null});
+  //       } catch (e) {
+  //         refreshToken({token: null});
+  //         alert(e);
+  //       }
+  //     };
+
+  //     clearAll();
+  //   }
+  //   if (error.response.status == 500) {
+  //     console.log('500 error');
+  //   }
+  //   alert(error);
+  // });
 };
 
 const getGuestOrders = async (
@@ -406,19 +411,19 @@ const getGuestOrders = async (
     )
     .then(res => {
       let dataObj = res.data[0].orderdata;
-      console.log(dataObj);
-      if (userType == 'ADM') {
-        setOrders(dataObj);
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
-      if (userType == 'branch') {
-        let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
+      setOrders(dataObj);
+      // if (userType == 'ADM') {
+      //   setOrders(dataObj);
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
+      // if (userType == 'branch') {
+      //   let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
 
-        setOrders(dataObjOrders);
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
+      //   setOrders(dataObjOrders);
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
     })
     .catch(error => {
       if (error.response.status == 401) {
@@ -449,7 +454,7 @@ const getCounterOrders = async (
   let userToken = await AsyncStorage.getItem('token');
   let userType = await AsyncStorage.getItem('type');
   let userID = await AsyncStorage.getItem('ID');
-
+  console.log(userToken);
   axios
     .get(
       'http://143.110.244.110/tija/frontuser/viewcounterorders',
@@ -459,20 +464,21 @@ const getCounterOrders = async (
       },
     )
     .then(res => {
-      let dataObj = res.data[0].orderdata;
+      let dataObj = res.data[0].orderedproduct;
+      console.log(dataObj);
+      setOrders(dataObj);
+      // if (userType == 'ADM') {
+      //   setOrders(dataObj);
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
+      // if (userType == 'branch') {
+      //   let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
 
-      if (userType == 'ADM') {
-        setOrders(dataObj);
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
-      if (userType == 'branch') {
-        let dataObjOrders = dataObj.filter(item => item.branch_id == userID);
-
-        setOrders(dataObjOrders);
-        // var slicedData = dataObj.slice(trimStart, trimEnd);
-        // setData(slicedData);
-      }
+      //   setOrders(dataObjOrders);
+      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
+      //   // setData(slicedData);
+      // }
     })
     .catch(error => {
       if (error.response.status == 401) {

@@ -29,7 +29,7 @@ const ViewUser = ({navigation}) => {
   }, [navigation]);
 
   React.useEffect(() => {
-    var data = users.slice(trimStart, trimEnd);
+    var data = users?.slice(trimStart, trimEnd);
     setData(data);
   }, [page, rows, users]);
 
@@ -138,9 +138,9 @@ const ViewUser = ({navigation}) => {
 
             <DataTable.Pagination
               page={page}
-              numberOfPages={Math.ceil(users.length / rows)}
+              numberOfPages={Math.ceil(users?.length / rows)}
               onPageChange={page => setPage(page)}
-              label={`${from + 1}-${to} of ${users.length}`}
+              label={`${from + 1}-${to} of ${users?.length}`}
               showFastPaginationControls
               numberOfItemsPerPageList={rowsList}
               numberOfItemsPerPage={rows}

@@ -94,9 +94,7 @@ class ActionMenu extends React.PureComponent {
                 this.hideMenu();
                 this.props.navigation.navigate(
                   `${this.props.transactionRoute}`,
-                  {
-                    userId: this.props.item.id,
-                  },
+                  {userId: this.props.item.id},
                 );
               }}>
               Transactions

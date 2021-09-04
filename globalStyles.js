@@ -34,6 +34,7 @@ const CreateScreenStyle = StyleSheet.create({
     borderWidth: 1,
     borderColor: 'grey',
     borderRadius: 3,
+    marginBottom: 10,
   },
 });
 

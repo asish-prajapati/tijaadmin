@@ -136,8 +136,8 @@ const ViewCounter = ({navigation}) => {
                               status={item.status}
                               showEnbDsb={true}
                               enbdsbRoute="enbdisbcounter"
-                              // showDelete={true}
-                              // deleteRoute="delete_counter"
+                              showDelete={true}
+                              deleteRoute="delete_counter"
                               getCounterList={getCounterList}
                             />
                           </DataTable.Cell>
