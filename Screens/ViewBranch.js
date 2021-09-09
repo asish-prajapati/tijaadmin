@@ -15,7 +15,7 @@ const ViewUser = ({navigation}) => {
   const [rows, onRowsChange] = React.useState(rowsList[0]);
   const [data, setData] = React.useState([]);
   const from = page * rows;
-  const to = Math.min((page + 1) * rows, branches.length);
+  const to = Math.min((page + 1) * rows, branches.length); 
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
   const getBranchList = () => {

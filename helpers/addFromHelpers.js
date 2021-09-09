@@ -316,6 +316,7 @@ const editBranch = async (id, imagefile, body) => {
         Authorization: `Bearer ${userToken}`,
       },
     });
+    // console.log(response.data);
     return response.data;
   } catch (e) {
     alert(e);

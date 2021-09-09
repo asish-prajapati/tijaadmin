@@ -51,7 +51,7 @@ class ActionMenuOrder extends React.PureComponent {
         description: 'downloading file...',
         notification: true,
         // useDownloadManager works with Android only
-        useDownloadManager: true,
+        useDownloadManager: true, 
       },
     };
     config(options)
