@@ -59,7 +59,7 @@ const UserTransaction = ({navigation, route}) => {
           </Text>
         </View>
         <Provider>
-          <DataTable>
+          <DataTable style={{flex: 1}}>
             <ScrollView horizontal>
               <View>
                 <DataTable.Header>

@@ -7,6 +7,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {TextInput, Button} from 'react-native-paper';
@@ -21,6 +23,7 @@ export default function AddBranch({navigation}) {
   const [image, setImage] = useState('');
   const [imagefile, setImagefile] = useState(null);
   const [alertA, setAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const selectImage = () => {
     launchImageLibrary({quality: 0.4}, fileObj => {
@@ -50,6 +53,7 @@ export default function AddBranch({navigation}) {
     } else if (!/^[6789]\d{9}$/.test(mobile)) {
       alert('Enter Valid Mobile No');
     } else {
+      setLoading(true);
       const body = {
         email: email,
         password: password,
@@ -59,10 +63,14 @@ export default function AddBranch({navigation}) {
       };
       let response = await create_branch(imagefile, body);
       if (response[0].success == true) {
+        setLoading(false);
         resetForm({values: ''});
         setImage('');
         setImagefile(null);
         setAlert(true);
+      } else {
+        setLoading(false);
+        Alert.alert('Add Branch Failed', response[0].message);
       }
     }
   };
@@ -70,6 +78,7 @@ export default function AddBranch({navigation}) {
   return (
     <>
       <StatusBar backgroundColor="white" barStyle="dark-content" />
+
       <TouchableWithoutFeedback onPress={() => Keyboard.dismiss()}>
         <View style={CreateScreenStyle.container}>
           <AwesomeAlert
@@ -181,15 +190,22 @@ export default function AddBranch({navigation}) {
                   ) : null}
                 </View>
                 <KeyboardAvoidingView style={CreateScreenStyle.btnWrapper}>
-                  <Button
-                    type="submit"
-                    mode="contained"
-                    onPress={formikProps.handleSubmit}
-                    style={{
-                      width: 200,
-                    }}>
-                    Submit
-                  </Button>
+                  <ActivityIndicator
+                    animating={loading}
+                    size="large"
+                    color="0000ff"
+                  />
+                  {loading ? null : (
+                    <Button
+                      type="submit"
+                      mode="contained"
+                      onPress={formikProps.handleSubmit}
+                      style={{
+                        width: 200,
+                      }}>
+                      Submit
+                    </Button>
+                  )}
                 </KeyboardAvoidingView>
               </View>
             )}

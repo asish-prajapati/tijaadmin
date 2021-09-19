@@ -8,6 +8,7 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Image,
+  ActivityIndicator,
 } from 'react-native';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {TextInput, Button} from 'react-native-paper';
@@ -27,6 +28,7 @@ export default function EditBranch({navigation, route}) {
   const [image, setImage] = useState(item.image);
   const [imagefile, setImagefile] = useState(null);
   const [alertA, setAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   useEffect(() => {
     const unsubscribe = navigation.addListener('focus', async () => {
@@ -64,6 +66,7 @@ export default function EditBranch({navigation, route}) {
     } else if (!/^[6789]\d{9}$/.test(mobile)) {
       alert('Enter Valid Mobile No');
     } else {
+      setLoading(true);
       const body = {
         name: name,
         email: email,
@@ -73,6 +76,8 @@ export default function EditBranch({navigation, route}) {
       let response = await editBranch(item.id, imagefile, body);
 
       if (response[0].success == true) {
+        setLoading(false);
+
         setName('');
         setEmail('');
         setMobile('');
@@ -81,6 +86,8 @@ export default function EditBranch({navigation, route}) {
         setImagefile(null);
         setAlert(true);
       } else {
+        setLoading(false);
+
         alert(response[0].message);
       }
     }
@@ -188,15 +195,22 @@ export default function EditBranch({navigation, route}) {
                 bottom: 20,
                 alignSelf: 'center',
               }}>
-              <Button
-                type="submit"
-                mode="contained"
-                onPress={handleSubmit}
-                style={{
-                  width: 200,
-                }}>
-                Submit
-              </Button>
+              <ActivityIndicator
+                animating={loading}
+                size="large"
+                color="0000ff"
+              />
+              {loading ? null : (
+                <Button
+                  type="submit"
+                  mode="contained"
+                  onPress={handleSubmit}
+                  style={{
+                    width: 200,
+                  }}>
+                  Submit
+                </Button>
+              )}
             </KeyboardAvoidingView>
           </View>
         </View>

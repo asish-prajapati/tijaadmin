@@ -10,6 +10,8 @@ import {ViewScreenStyle} from '../globalStyles';
 const ViewUser = ({navigation}) => {
   const [users, setUsers] = useState([]);
   const {refreshToken} = useContext(AuthContext);
+  // const [refreshing, setRefreshing] = React.useState(false);
+
   const [page, setPage] = React.useState(0);
   const rowsList = [10, 15, 20];
   const [rows, onRowsChange] = React.useState(rowsList[0]);
@@ -32,6 +34,12 @@ const ViewUser = ({navigation}) => {
     var data = users?.slice(trimStart, trimEnd);
     setData(data);
   }, [page, rows, users]);
+
+  // const onRefresh = React.useCallback(async () => {
+  //   setRefreshing(true);
+  //   getUser(setUsers, refreshToken);
+  //   setRefreshing(false);
+  // }, []);
 
   return (
     <>
@@ -84,6 +92,12 @@ const ViewUser = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
+                  // refreshControl={
+                  //   <RefreshControl
+                  //     refreshing={refreshing}
+                  //     onRefresh={onRefresh}
+                  //   />
+                  //}
                   renderItem={({item, index, separators}) => {
                     return (
                       <>

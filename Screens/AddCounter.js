@@ -7,6 +7,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {TextInput, Button} from 'react-native-paper';
@@ -35,6 +37,7 @@ export default function AddCounter({navigation}) {
   const [imagefile, setImagefile] = useState(null);
   const [alertA, setAlert] = useState(false);
   const [utype, setUtype] = useState('');
+  const [loading, setLoading] = useState(false);
 
   const selectImage = () => {
     launchImageLibrary({quality: 0.4}, fileObj => {
@@ -63,6 +66,8 @@ export default function AddCounter({navigation}) {
     } else if (!branch) {
       alert('something went wrong');
     } else {
+      setLoading(true);
+
       const body = {
         branch_id: branch,
         category_id: category,
@@ -75,6 +80,8 @@ export default function AddCounter({navigation}) {
       let response = await create_counter(imagefile, body);
       console.log(response);
       if (response[0].success == true) {
+        setLoading(false);
+
         setName('');
         setBranch('');
         setCategory();
@@ -85,7 +92,9 @@ export default function AddCounter({navigation}) {
         setImagefile(null);
         setAlert(true);
       } else {
-        alert(response[0].message);
+        setLoading(false);
+
+        Alert.alert('Add Counter Failed', response[0].message);
       }
     }
   };
@@ -234,15 +243,22 @@ export default function AddCounter({navigation}) {
               ) : null}
             </View>
             <KeyboardAvoidingView style={CreateScreenStyle.btnWrapper}>
-              <Button
-                type="submit"
-                mode="contained"
-                onPress={handleSubmit}
-                style={{
-                  width: 200,
-                }}>
-                Submit
-              </Button>
+              <ActivityIndicator
+                animating={loading}
+                size="large"
+                color="0000ff"
+              />
+              {loading ? null : (
+                <Button
+                  type="submit"
+                  mode="contained"
+                  onPress={handleSubmit}
+                  style={{
+                    width: 200,
+                  }}>
+                  Submit
+                </Button>
+              )}
             </KeyboardAvoidingView>
           </View>
         </View>

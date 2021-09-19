@@ -8,6 +8,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {configureFonts, TextInput, Button} from 'react-native-paper';
@@ -32,6 +34,8 @@ export default function EditCounter({navigation, route}) {
   const [image, setImage] = useState(item.image);
   const [imagefile, setImagefile] = useState(null);
   const [alertA, setAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const [utype, setUtype] = useState('');
 
   useEffect(() => {
@@ -71,7 +75,6 @@ export default function EditCounter({navigation, route}) {
   };
 
   const handleSubmit = async () => {
-    console.log(branch);
     if (!name) {
       alert('Name can not be Empty');
     } else if (!email) {
@@ -87,6 +90,8 @@ export default function EditCounter({navigation, route}) {
     } else if (!branch) {
       alert('something went wrong');
     } else {
+      setLoading(true);
+
       let userToken;
       userToken = await AsyncStorage.getItem('token');
 
@@ -106,8 +111,9 @@ export default function EditCounter({navigation, route}) {
         },
       })
         .then(response => {
-          console.log(response.data);
           if (response.data[0].success == true) {
+            setLoading(false);
+
             setName('');
             setBranch('');
             setEmail('');
@@ -117,11 +123,14 @@ export default function EditCounter({navigation, route}) {
             setImagefile(null);
             setAlert(true);
           } else {
-            alert(response.data[0].message);
+            setLoading(false);
+
+            Alert.alert('Edit Counter Failed', response.data[0].message);
           }
         })
         .catch(err => {
-          console.log('something went wrong', err);
+          setLoading(false);
+          Alert.alert('something went wrong', err.message);
         });
     }
   };
@@ -236,15 +245,22 @@ export default function EditCounter({navigation, route}) {
               ) : null}
             </View>
             <KeyboardAvoidingView style={CreateScreenStyle.btnWrapper}>
-              <Button
-                type="submit"
-                mode="contained"
-                onPress={handleSubmit}
-                style={{
-                  width: 200,
-                }}>
-                Submit
-              </Button>
+              <ActivityIndicator
+                animating={loading}
+                size="large"
+                color="0000ff"
+              />
+              {loading ? null : (
+                <Button
+                  type="submit"
+                  mode="contained"
+                  onPress={handleSubmit}
+                  style={{
+                    width: 200,
+                  }}>
+                  Submit
+                </Button>
+              )}
             </KeyboardAvoidingView>
           </View>
         </View>

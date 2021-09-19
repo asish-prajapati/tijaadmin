@@ -7,6 +7,8 @@ import {
   Keyboard,
   KeyboardAvoidingView,
   Image,
+  Alert,
+  ActivityIndicator,
 } from 'react-native';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {TextInput, Button} from 'react-native-paper';
@@ -35,6 +37,7 @@ export default function AddProduct({navigation}) {
   const [image, setImage] = useState('');
   const [imagefile, setImagefile] = useState(null);
   const [alertA, setAlert] = useState(false);
+  const [loading, setLoading] = useState(false);
 
   const selectImage = () => {
     launchImageLibrary({quality: 0.4}, fileObj => {
@@ -59,6 +62,8 @@ export default function AddProduct({navigation}) {
     } else if (!category) {
       alert('something went wrong');
     } else {
+      setLoading(true);
+
       const body = {
         branch_id: branch,
         category_id: category,
@@ -69,6 +74,8 @@ export default function AddProduct({navigation}) {
 
       let response = await create_product(imagefile, body);
       if (response[0].success == true) {
+        setLoading(false);
+
         setName('');
         setBranch('');
         setCategory();
@@ -77,6 +84,8 @@ export default function AddProduct({navigation}) {
         setImage('');
         setImagefile(null);
         setAlert(true);
+      } else {
+        Alert.alert('Add Product Failed', response[0].message);
       }
     }
   };
@@ -217,15 +226,22 @@ export default function AddProduct({navigation}) {
               ) : null}
             </View>
             <KeyboardAvoidingView style={CreateScreenStyle.btnWrapper}>
-              <Button
-                type="submit"
-                mode="contained"
-                onPress={handleSubmit}
-                style={{
-                  width: 200,
-                }}>
-                Submit
-              </Button>
+              <ActivityIndicator
+                animating={loading}
+                size="large"
+                color="0000ff"
+              />
+              {loading ? null : (
+                <Button
+                  type="submit"
+                  mode="contained"
+                  onPress={handleSubmit}
+                  style={{
+                    width: 200,
+                  }}>
+                  Submit
+                </Button>
+              )}
             </KeyboardAvoidingView>
           </View>
         </View>
