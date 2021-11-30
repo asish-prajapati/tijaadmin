@@ -8,7 +8,7 @@ import {
   View,
   StyleSheet,
   Text,
-  StatusBar,
+  StatusBar,RefreshControl
 } from 'react-native';
 
 import {AuthContext} from '../App';
@@ -25,6 +25,13 @@ const CounterOrder = ({navigation}) => {
   const to = Math.min((page + 1) * rows, orders.length);
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getCounterOrders(setOrders, refreshToken);
+    setRefreshing(false);
+  }, []);
+
   const getCOrdersList = () => {
     getCounterOrders(setOrders, refreshToken);
   };
@@ -66,16 +73,16 @@ const CounterOrder = ({navigation}) => {
                     SNo.
                   </DataTable.Title>
                   <DataTable.Title
-                    style={{width: 150, justifyContent: 'center'}}>
-                    Product Name
+                    style={{width: 200, justifyContent: 'center'}}>
+                    Order Id
                   </DataTable.Title>
                   <DataTable.Title
                     style={{width: 250, justifyContent: 'center'}}>
                     Action
                   </DataTable.Title>
                   <DataTable.Title
-                    style={{width: 200, justifyContent: 'center'}}>
-                    Order Id
+                    style={{width: 150, justifyContent: 'center'}}>
+                    Product Name
                   </DataTable.Title>
 
                   <DataTable.Title
@@ -95,6 +102,12 @@ const CounterOrder = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   keyExtractor={(item, index) => index}
                   renderItem={({item, index, separators}) => {
                     return (
@@ -105,21 +118,23 @@ const CounterOrder = ({navigation}) => {
                             {index + 1}
                           </DataTable.Cell>
                           <DataTable.Cell
-                            style={[styles.cellStyle, {width: 150}]}>
-                            {item.name}
+                            style={[styles.cellStyle, {width: 200}]}>
+                            {item.order_id}
                           </DataTable.Cell>
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 250}]}>
                             <ActionMenuCOrder
-                              order_id={item.id}
+                              order_id={item.order_id}
+                              id={item.id}
                               status={item.status}
                               getCOrdersList={getCOrdersList}
                             />
                           </DataTable.Cell>
                           <DataTable.Cell
-                            style={[styles.cellStyle, {width: 200}]}>
-                            {item.order_id}
+                            style={[styles.cellStyle, {width: 150}]}>
+                            {item.name}
                           </DataTable.Cell>
+
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 100}]}>
                             {item.price}

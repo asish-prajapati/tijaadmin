@@ -1,6 +1,17 @@
 import React from 'react';
 import {View} from 'react-native';
+import {baseUrl} from '../apiConfig';
 import {Button, Text} from 'react-native-paper';
+import IconAD from 'react-native-vector-icons/AntDesign';
+// import IconMi from 'react-native-vector-icons/MaterialIcons';
+
+import {
+  BluetoothEscposPrinter,
+  BluetoothManager,
+  BluetoothTscPrinter,
+} from 'react-native-bluetooth-escpos-printer';
+
+import {_printReciept} from '../helpers/printReciept';
 import {
   accept,
   cancle,
@@ -30,7 +41,7 @@ class ActionMenuCOrder extends React.PureComponent {
 
     let date = new Date();
     // File URL which we want to download
-    let FILE_URL = `http://143.110.244.110/tija/frontuser/downloadinvoiceadmin/${id}.pdf`;
+    let FILE_URL = `${baseUrl}downloadinvoiceadmin/${id}.pdf`;
     const getFileExtention = fileUrl => {
       // To get the file extension
       return /[.]/.exec(fileUrl) ? /[^.]+$/.exec(fileUrl) : undefined;
@@ -145,7 +156,12 @@ class ActionMenuCOrder extends React.PureComponent {
           </View>
         )}
         {this.props.status == 3 && (
-          <View style={{marginVertical: 10}}>
+          <View
+            style={{
+              marginVertical: 10,
+              borderRightColor: 'white',
+              borderRightWidth: 1,
+            }}>
             <Button
               mode="contained"
               color="green"
@@ -153,8 +169,28 @@ class ActionMenuCOrder extends React.PureComponent {
                 this.downloadInvoice(this.props.id);
                 console.log('ggglg');
               }}
-              labelStyle={{color: 'white'}}>
+              icon="download"
+              labelStyle={{color: 'white', fontSize: 10}}>
               Invoice
+            </Button>
+          </View>
+        )}
+        {this.props.status == 3 && (
+          <View
+            style={{
+              marginVertical: 10,
+              borderLeftColor: 'white',
+              borderLeftWidth: 1,
+            }}>
+            <Button
+              mode="contained"
+              color="green"
+              icon="receipt"
+              onPress={() => {
+                _printReciept(this.props.item);
+              }}
+              labelStyle={{color: 'white', fontSize: 10}}>
+              Print
             </Button>
           </View>
         )}
@@ -179,7 +215,7 @@ class ActionMenuCOrder extends React.PureComponent {
                   this.props.getGuestOrdersList,
                 );
               }}>
-              Cancle
+              Cancel
             </Button>
           </View>
         )}

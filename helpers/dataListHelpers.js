@@ -1,11 +1,12 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import {baseUrl} from '../apiConfig';
 
 const get_transaction = async (userId, refreshToken) => {
   let userToken = await AsyncStorage.getItem('token');
   try {
     let response = await axios.get(
-      'http://143.110.244.110/tija/frontuser/view_user_transaction',
+      `${baseUrl}view_user_transaction`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -16,112 +17,7 @@ const get_transaction = async (userId, refreshToken) => {
     console.log(response);
     return response;
   } catch (error) {
-    if (error.response.status == 401) {
-      const clearAll = async () => {
-        try {
-          await AsyncStorage.clear();
-          refreshToken({token: null});
-        } catch (e) {
-          refreshToken({token: null});
-          alert(e);
-        }
-      };
-      clearAll();
-    }
-    if (error.response.status == 500) {
-      console.log('500 error');
-    }
-  }
-};
-
-const enbdsbu = async (enbdsbRoute, userId) => {
-  let userToken = await AsyncStorage.getItem('token');
-  try {
-    let response = await axios.get(
-      `http://143.110.244.110/tija/frontuser/${enbdsbRoute}`,
-
-      {
-        headers: {Authorization: `Bearer ${userToken}`},
-        params: {id: userId},
-      },
-    );
-    response = await response.data;
-    return response;
-  } catch (error) {
-    if (error.response.status == 401) {
-      const clearAll = async () => {
-        try {
-          await AsyncStorage.clear();
-          refreshToken({token: null});
-        } catch (e) {
-          refreshToken({token: null});
-          alert(e);
-        }
-      };
-      clearAll();
-    }
-    if (error.response.status == 500) {
-      console.log('500 error');
-    }
-    alert(error);
-    console.log(error);
-  }
-};
-const delete_ = async (deleteRoute, userId) => {
-  let userToken = await AsyncStorage.getItem('token');
-  try {
-    let response = await axios.get(
-      `http://143.110.244.110/tija/frontuser/${deleteRoute}/${userId}`,
-
-      {
-        headers: {Authorization: `Bearer ${userToken}`},
-      },
-    );
-    response = await response.data;
-
-    return response;
-  } catch (error) {
-    if (error.response.status == 401) {
-      const clearAll = async () => {
-        try {
-          await AsyncStorage.clear();
-          refreshToken({token: null});
-        } catch (e) {
-          refreshToken({token: null});
-          alert(e);
-        }
-      };
-      clearAll();
-    }
-    if (error.response.status == 500) {
-      console.log('500 error');
-    }
-    alert(error);
-  }
-};
-
-const getUser = async (setUsers, refreshToken) => {
-  let userToken;
-  let userType;
-  userToken = await AsyncStorage.getItem('token');
-  userType = await AsyncStorage.getItem('type');
-
-  axios
-    .get(
-      `http://143.110.244.110/tija/frontuser/viewusers?type=${userType}`,
-
-      {
-        headers: {Authorization: `Bearer ${userToken}`},
-      },
-    )
-    .then(res => {
-      let dataObj = res.data[0].users;
-      console.log(dataObj);
-      // var slicedData = dataObj.slice(trimStart, trimEnd);
-      setUsers(dataObj);
-      // setData(slicedData);
-    })
-    .catch(error => {
+    if (error.response.status != undefined) {
       if (error.response.status == 401) {
         const clearAll = async () => {
           try {
@@ -135,8 +31,130 @@ const getUser = async (setUsers, refreshToken) => {
         };
 
         clearAll();
+      } else {
+        alert('Something Went Wrong...');
       }
-      alert(error);
+    } else {
+      alert('Something Went Wrong...');
+    }
+  }
+};
+
+const enbdsbu = async (enbdsbRoute, userId) => {
+  let userToken = await AsyncStorage.getItem('token');
+  try {
+    let response = await axios.get(
+      `${baseUrl}${enbdsbRoute}`,
+
+      {
+        headers: {Authorization: `Bearer ${userToken}`},
+        params: {id: userId},
+      },
+    );
+    response = await response.data;
+    return response;
+  } catch (error) {
+    if (error.response.status != undefined) {
+      if (error.response.status == 401) {
+        const clearAll = async () => {
+          try {
+            await AsyncStorage.clear();
+
+            refreshToken({token: null});
+          } catch (e) {
+            refreshToken({token: null});
+            alert(e);
+          }
+        };
+
+        clearAll();
+      } else {
+        alert('Something Went Wrong...');
+      }
+    } else {
+      alert('Something Went Wrong...');
+    }
+  }
+};
+const delete_ = async (deleteRoute, userId) => {
+  let userToken = await AsyncStorage.getItem('token');
+  try {
+    let response = await axios.get(
+      `${baseUrl}${deleteRoute}/${userId}`,
+
+      {
+        headers: {Authorization: `Bearer ${userToken}`},
+      },
+    );
+    response = await response.data;
+
+    return response;
+  } catch (error) {
+    if (error.response.status != undefined) {
+      if (error.response.status == 401) {
+        const clearAll = async () => {
+          try {
+            await AsyncStorage.clear();
+
+            refreshToken({token: null});
+          } catch (e) {
+            refreshToken({token: null});
+            alert(e);
+          }
+        };
+
+        clearAll();
+      } else {
+        alert('Something Went Wrong...');
+      }
+    } else {
+      alert('Something Went Wrong...');
+    }
+  }
+};
+
+const getUser = async (setUsers, refreshToken) => {
+  let userToken;
+  let userType;
+  userToken = await AsyncStorage.getItem('token');
+  userType = await AsyncStorage.getItem('type');
+
+  axios
+    .get(
+      `${baseUrl}viewusers?type=${userType}`,
+
+      {
+        headers: {Authorization: `Bearer ${userToken}`},
+      },
+    )
+    .then(res => {
+      let dataObj = res.data[0].users;
+      console.log(dataObj);
+      // var slicedData = dataObj.slice(trimStart, trimEnd);
+      setUsers(dataObj);
+      // setData(slicedData);
+    })
+    .catch(error => {
+      if (error.response.status != undefined) {
+        if (error.response.status == 401) {
+          const clearAll = async () => {
+            try {
+              await AsyncStorage.clear();
+
+              refreshToken({token: null});
+            } catch (e) {
+              refreshToken({token: null});
+              alert(e);
+            }
+          };
+
+          clearAll();
+        } else {
+          alert('Something Went Wrong...');
+        }
+      } else {
+        alert('Something Went Wrong...');
+      }
     });
 };
 const getCategory = async (
@@ -151,7 +169,7 @@ const getCategory = async (
   let userID = await AsyncStorage.getItem('ID');
   axios
     .get(
-      'http://143.110.244.110/tija/frontuser/viewcategory',
+      `${baseUrl}viewcategory`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -159,36 +177,39 @@ const getCategory = async (
     )
     .then(res => {
       let dataObj = res.data[0].category;
-      setCategory(dataObj);
-      // if (userType == 'ADM') {
-      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
-      //   setCategory(dataObj);
-      //   // setData(slicedData);
-      // }
-      // if (userType == 'branch') {
-      //   let dataObjCategory = dataObj.filter(item => item.branch_id == userID);
-      //   // var slicedData = dataObjCategory.slice(trimStart, trimEnd);
-      //   setCategory(dataObjCategory);
-      //   // setData(slicedData);
-      // }
+      // setCategory(dataObj);
+      if (userType == 'ADM') {
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        setCategory(dataObj);
+        // setData(slicedData);
+      }
+      if (userType == 'branch') {
+        let dataObjCategory = dataObj.filter(item => item.branch_id == userID);
+        // var slicedData = dataObjCategory.slice(trimStart, trimEnd);
+        setCategory(dataObjCategory);
+        // setData(slicedData);
+      }
     })
     .catch(error => {
-      if (error.response.status == 401) {
-        const clearAll = async () => {
-          try {
-            await AsyncStorage.clear();
+      if (error.response.status != undefined) {
+        if (error.response.status == 401) {
+          const clearAll = async () => {
+            try {
+              await AsyncStorage.clear();
 
-            refreshToken({token: null});
-          } catch (e) {
-            refreshToken({token: null});
-            alert(e);
-          }
-        };
+              refreshToken({token: null});
+            } catch (e) {
+              refreshToken({token: null});
+              alert(e);
+            }
+          };
 
-        clearAll();
-      }
-      if (error.response.status == 500) {
-        console.log('500 error');
+          clearAll();
+        } else {
+          alert('Something Went Wrong...');
+        }
+      } else {
+        alert('Something Went Wrong...');
       }
     });
 };
@@ -202,7 +223,7 @@ const getCounters = async (
   let userID = await AsyncStorage.getItem('ID');
   axios
     .get(
-      'http://143.110.244.110/tija/frontuser/viewcounter',
+      `${baseUrl}viewcounter`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -210,35 +231,40 @@ const getCounters = async (
     )
     .then(res => {
       let dataObj = res.data[0].counter;
-      setCounters(dataObj);
-      // if (userType == 'ADM') {
-      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
-      //   setCounters(dataObj);
-      //   // setData(slicedData);
-      // }
-      // if (userType == 'branch') {
-      //   let dataObjCounter = dataObj.filter(item => item.branch_id == userID);
-      //   // var slicedData = dataObjCounter.slice(trimStart, trimEnd);
-      //   setCounters(dataObjCounter);
-      //   // setData(slicedData);
-      // }
+      // setCounters(dataObj);
+      if (userType == 'ADM') {
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        setCounters(dataObj);
+        // setData(slicedData);
+      }
+      if (userType == 'branch') {
+        let dataObjCounter = dataObj.filter(item => item.branch_id == userID);
+        // var slicedData = dataObjCounter.slice(trimStart, trimEnd);
+        setCounters(dataObjCounter);
+        // setData(slicedData);
+      }
     })
     .catch(error => {
-      if (error.response.status == 401) {
-        const clearAll = async () => {
-          try {
-            await AsyncStorage.clear();
+      if (error.response.status != undefined) {
+        if (error.response.status == 401) {
+          const clearAll = async () => {
+            try {
+              await AsyncStorage.clear();
 
-            refreshToken({token: null});
-          } catch (e) {
-            refreshToken({token: null});
-            alert(e);
-          }
-        };
+              refreshToken({token: null});
+            } catch (e) {
+              refreshToken({token: null});
+              alert(e);
+            }
+          };
 
-        clearAll();
+          clearAll();
+        } else {
+          alert('Something Went Wrong...');
+        }
+      } else {
+        alert('Something Went Wrong...');
       }
-      alert(error);
     });
 };
 const getProducts = async (
@@ -252,7 +278,7 @@ const getProducts = async (
 
   axios
     .get(
-      'http://143.110.244.110/tija/frontuser/viewproduct',
+      `${baseUrl}viewproduct`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -260,36 +286,41 @@ const getProducts = async (
     )
     .then(res => {
       let dataObj = res.data[0].product;
-      setProducts(dataObj);
-      // if (userType == 'ADM') {
-      //   setProducts(dataObj);
-      //   // var slicedData = dataObj.slice(trimStart, trimEnd);
-      //   // setData(slicedData);
-      // }
-      // if (userType == 'branch') {
-      //   let dataObjProducts = dataObj.filter(item => item.branch_id == userID);
+      // setProducts(dataObj);
+      if (userType == 'ADM') {
+        setProducts(dataObj);
+        // var slicedData = dataObj.slice(trimStart, trimEnd);
+        // setData(slicedData);
+      }
+      if (userType == 'branch') {
+        let dataObjProducts = dataObj.filter(item => item.branch_id == userID);
 
-      //   setProducts(dataObjProducts);
-      //   // var slicedData = dataObjProducts.slice(trimStart, trimEnd);
-      //   // setData(slicedData);
-      // }
+        setProducts(dataObjProducts);
+        // var slicedData = dataObjProducts.slice(trimStart, trimEnd);
+        // setData(slicedData);
+      }
     })
     .catch(error => {
-      if (error.response.status == 401) {
-        const clearAll = async () => {
-          try {
-            await AsyncStorage.clear();
+      if (error.response.status != undefined) {
+        if (error.response.status == 401) {
+          const clearAll = async () => {
+            try {
+              await AsyncStorage.clear();
 
-            refreshToken({token: null});
-          } catch (e) {
-            refreshToken({token: null});
-            alert(e);
-          }
-        };
+              refreshToken({token: null});
+            } catch (e) {
+              refreshToken({token: null});
+              alert(e);
+            }
+          };
 
-        clearAll();
+          clearAll();
+        } else {
+          alert('Something Went Wrong...');
+        }
+      } else {
+        alert('Something Went Wrong...');
       }
-      alert(error);
     });
 };
 const getBranch = async (
@@ -301,10 +332,10 @@ const getBranch = async (
   let userType;
   userToken = await AsyncStorage.getItem('token');
   userType = await AsyncStorage.getItem('type');
-
+  console.log(userToken);
   axios
     .get(
-      'http://143.110.244.110/tija/frontuser/viewbranch',
+      `${baseUrl}viewbranch`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -317,19 +348,25 @@ const getBranch = async (
       // setData(slicedData);
     })
     .catch(error => {
-      if (error.response.status == 401) {
-        const clearAll = async () => {
-          try {
-            await AsyncStorage.clear();
+      if (error.response.status != undefined) {
+        if (error.response.status == 401) {
+          const clearAll = async () => {
+            try {
+              await AsyncStorage.clear();
 
-            refreshToken({token: null});
-          } catch (e) {
-            refreshToken({token: null});
-            alert(e);
-          }
-        };
+              refreshToken({token: null});
+            } catch (e) {
+              refreshToken({token: null});
+              alert(e);
+            }
+          };
 
-        clearAll();
+          clearAll();
+        } else {
+          alert('Something Went Wrong...');
+        }
+      } else {
+        alert('Something Went Wrong...');
       }
     });
 };
@@ -343,10 +380,11 @@ const getOrders = async (
   let userType = await AsyncStorage.getItem('type');
   let userID = await AsyncStorage.getItem('ID');
   console.log(userToken);
+  console.log("hi")
 
   axios
     .get(
-      'http://143.110.244.110/tija/frontuser/vieworders',
+      `${baseUrl}vieworders`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -354,7 +392,9 @@ const getOrders = async (
     )
     .then(res => {
       let dataObj = res.data[0].orderdata;
-      console.log(dataObj);
+      console.log("vieworder")
+      console.log(dataObj)
+     
 
       setOrders(dataObj);
       // if (userType == 'ADM') {
@@ -369,27 +409,30 @@ const getOrders = async (
       //   // var slicedData = dataObj.slice(trimStart, trimEnd);
       //   // setData(slicedData);
       // }
+    })
+    .catch(error => {
+      console.log(error)
+      // if (error.response.status != undefined) {
+      //   if (error.response.status == 401) {
+      //     const clearAll = async () => {
+      //       try {
+      //         await AsyncStorage.clear();
+
+      //         refreshToken({token: null});
+      //       } catch (e) {
+      //         refreshToken({token: null});
+      //         alert(e);
+      //       }
+      //     };
+
+      //     clearAll();
+      //   } else {
+      //     alert('Something Went Wrong...');
+      //   }
+      // } else {
+      //   alert('Something Went Wrong...');
+      // }
     });
-  // .catch(error => {
-  //   if (error.response.status == 401) {
-  //     const clearAll = async () => {
-  //       try {
-  //         await AsyncStorage.clear();
-
-  //         refreshToken({token: null});
-  //       } catch (e) {
-  //         refreshToken({token: null});
-  //         alert(e);
-  //       }
-  //     };
-
-  //     clearAll();
-  //   }
-  //   if (error.response.status == 500) {
-  //     console.log('500 error');
-  //   }
-  //   alert(error);
-  // });
 };
 
 const getGuestOrders = async (
@@ -403,7 +446,7 @@ const getGuestOrders = async (
 
   axios
     .get(
-      'http://143.110.244.110/tija/frontuser/viewguestsellorders',
+      `${baseUrl}viewguestsellorders`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -426,24 +469,26 @@ const getGuestOrders = async (
       // }
     })
     .catch(error => {
-      if (error.response.status == 401) {
-        const clearAll = async () => {
-          try {
-            await AsyncStorage.clear();
+      if (error.response.status != undefined) {
+        if (error.response.status == 401) {
+          const clearAll = async () => {
+            try {
+              await AsyncStorage.clear();
 
-            refreshToken({token: null});
-          } catch (e) {
-            refreshToken({token: null});
-            alert(e);
-          }
-        };
+              refreshToken({token: null});
+            } catch (e) {
+              refreshToken({token: null});
+              alert(e);
+            }
+          };
 
-        clearAll();
+          clearAll();
+        } else {
+          alert('Something Went Wrong...');
+        }
+      } else {
+        alert('Something Went Wrong...');
       }
-      if (error.response.status == 500) {
-        console.log('500 error');
-      }
-      alert(error);
     });
 };
 const getCounterOrders = async (
@@ -455,9 +500,10 @@ const getCounterOrders = async (
   let userType = await AsyncStorage.getItem('type');
   let userID = await AsyncStorage.getItem('ID');
   console.log(userToken);
+  console.log("hii")
   axios
     .get(
-      'http://143.110.244.110/tija/frontuser/viewcounterorders',
+      `${baseUrl}viewcounterorders`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -481,24 +527,28 @@ const getCounterOrders = async (
       // }
     })
     .catch(error => {
-      if (error.response.status == 401) {
-        const clearAll = async () => {
-          try {
-            await AsyncStorage.clear();
+      console.log(error)
+      
+      if (error.response.status != undefined) {
+        if (error.response.status == 401) {
+          const clearAll = async () => {
+            try {
+              await AsyncStorage.clear();
 
-            refreshToken({token: null});
-          } catch (e) {
-            refreshToken({token: null});
-            alert(e);
-          }
-        };
+              refreshToken({token: null});
+            } catch (e) {
+              refreshToken({token: null});
+              alert(e);
+            }
+          };
 
-        clearAll();
+          clearAll();
+        } else {
+          alert('Something Went Wrong...');
+        }
+      } else {
+        alert('Something Went Wrong...');
       }
-      if (error.response.status == 500) {
-        console.log('500 error');
-      }
-      alert(error);
     });
 };
 

@@ -1,14 +1,11 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {baseUrl} from '../apiConfig';
 const initialBranchDetail = async id => {
   let userToken = await AsyncStorage.getItem('token');
-  let res = await axios.get(
-    `http://143.110.244.110/tija/frontuser/edit_branch/${id}`,
-    {
-      headers: {Authorization: `Bearer ${userToken}`},
-    },
-  );
+  let res = await axios.get(`${baseUrl}edit_branch/${id}`, {
+    headers: {Authorization: `Bearer ${userToken}`},
+  });
 
   return res.data[0];
 };
@@ -16,7 +13,7 @@ const initialBranchDetail = async id => {
 const initialCounterDetail = async id => {
   let userToken = await AsyncStorage.getItem('token');
   let res = await axios.get(
-    `http://143.110.244.110/tija/frontuser/edit_branch/${id}`,
+    `${baseUrl}edit_branch/${id}`,
     {
       headers: {Authorization: `Bearer ${userToken}`},
     },

@@ -23,40 +23,47 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CreateScreenStyle} from '../globalStyles';
 import {Picker} from '@react-native-picker/picker';
 import theme from '../theme/theme';
+import {WaveIndicator,BarIndicator} from 'react-native-indicators';
+
 
 export default function SellProduct({navigation}) {
   const [branch, setBranch] = useState('');
-
+  const [loading, setLoading] = useState(false)
   const [branchList, setBranchList] = useState([]);
   const [catList, setCatList] = useState([]);
   const [category, setCategory] = useState('');
   const [product, setProduct] = useState('');
   const [productList, setProductList] = useState([]);
-  const [quantity, setQuantity] = useState(1);
+  const [quantity, setQuantity] = useState('');
   const [utype, setUtype] = useState('');
   const [alertA, setAlert] = useState(false);
 
   const handleSubmit = async () => {
+    
+   console.log(branch)
+   console.log("hi")
     if (!branch) {
       alert('Select Branch');
     } else if (!category) {
       alert('Select Category');
     } else {
+      setLoading(true)
       const body = {
         branch_id: branch,
         category_id: category,
         product_id: product,
         quantity: quantity,
       };
-      console.log(body);
 
-      let response = await sell_product(body);
-      console.log(response);
+      let response = await sell_product(body,setLoading);
       if (response[0].success == true) {
-        setBranch('');
+        setLoading(false)
+        if (utype=="ADM"){
+          setBranch('') 
+        }
         setCategory('');
         setProduct('');
-        setQuantity(1);
+        setQuantity('');
         setAlert(true);
       }
     }
@@ -189,7 +196,7 @@ export default function SellProduct({navigation}) {
             />
 
             <KeyboardAvoidingView style={CreateScreenStyle.btnWrapper}>
-              <Button
+             {loading ?  < BarIndicator  color="coral"/>  : <Button
                 type="submit"
                 mode="contained"
                 onPress={handleSubmit}
@@ -197,7 +204,7 @@ export default function SellProduct({navigation}) {
                   width: 200,
                 }}>
                 Submit
-              </Button>
+              </Button>}
             </KeyboardAvoidingView>
           </View>
         </View>

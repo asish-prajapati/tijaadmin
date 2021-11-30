@@ -22,6 +22,7 @@ import {getBranch} from '../helpers/addFromHelpers';
 import {CreateScreenStyle} from '../globalStyles';
 import {Picker} from '@react-native-picker/picker';
 import theme from '../theme/theme';
+import {baseUrl} from '../apiConfig';
 
 export default function EditCounter({navigation, route}) {
   const {item} = route.params;
@@ -94,10 +95,15 @@ export default function EditCounter({navigation, route}) {
 
       let userToken;
       userToken = await AsyncStorage.getItem('token');
-
+      console.log(userToken)
+       console.log(branch)
+       console.log(email)
+       console.log(item.id)
+       console.log(name)
+       console.log(mobile)
       axios({
         method: 'POST',
-        url: 'http://143.110.244.110/tija/frontuser/edit_counter',
+        url: `${baseUrl}edit_counter`,
         data: createFormData(imagefile, {
           branch_id: branch,
           email: email,

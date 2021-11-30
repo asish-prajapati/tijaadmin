@@ -2,7 +2,7 @@ import React, {useEffect, useState, useContext} from 'react';
 import {DataTable, Provider} from 'react-native-paper';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {getUser} from '../helpers/dataListHelpers';
-import {FlatList, ScrollView, View, Image, Text, StatusBar} from 'react-native';
+import {FlatList, ScrollView, View, Image, Text, StatusBar,RefreshControl} from 'react-native';
 import {AuthContext} from '../App';
 import ActionMenu from '../shared/ActionMenu';
 import {ViewScreenStyle} from '../globalStyles';
@@ -20,6 +20,13 @@ const ViewUser = ({navigation}) => {
   const to = Math.min((page + 1) * rows, users.length);
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
+  const [refreshing, setRefreshing] = React.useState(false);
+   
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getUser(setUsers, refreshToken);
+    setRefreshing(false);
+  }, []);
   const getUserList = () => {
     getUser(setUsers, refreshToken);
   };
@@ -34,12 +41,6 @@ const ViewUser = ({navigation}) => {
     var data = users?.slice(trimStart, trimEnd);
     setData(data);
   }, [page, rows, users]);
-
-  // const onRefresh = React.useCallback(async () => {
-  //   setRefreshing(true);
-  //   getUser(setUsers, refreshToken);
-  //   setRefreshing(false);
-  // }, []);
 
   return (
     <>
@@ -73,10 +74,10 @@ const ViewUser = ({navigation}) => {
                     }}>
                     Name
                   </DataTable.Title>
-                  <DataTable.Title
+                  {/* <DataTable.Title
                     style={{width: 50, justifyContent: 'center'}}>
                     Image
-                  </DataTable.Title>
+                  </DataTable.Title> */}
                   <DataTable.Title
                     style={{width: 200, justifyContent: 'center'}}>
                     Email
@@ -92,12 +93,12 @@ const ViewUser = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
-                  // refreshControl={
-                  //   <RefreshControl
-                  //     refreshing={refreshing}
-                  //     onRefresh={onRefresh}
-                  //   />
-                  //}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   renderItem={({item, index, separators}) => {
                     return (
                       <>
@@ -111,14 +112,14 @@ const ViewUser = ({navigation}) => {
                             numeric>
                             {item.name}
                           </DataTable.Cell>
-                          <DataTable.Cell
+                          {/* <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 50}]}
                             numeric>
                             <Image
                               source={{uri: item.image}}
                               style={{width: 40, height: 40}}
                             />
-                          </DataTable.Cell>
+                          </DataTable.Cell> */}
                           <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 200}]}
                             numeric>

@@ -15,6 +15,7 @@ import Snackbar from 'react-native-snackbar';
 import {AuthContext} from '../App';
 
 import AsyncStorage from '@react-native-async-storage/async-storage';
+import { baseUrl } from '../apiConfig';
 
 export default function Login({navigation}) {
   const [email, setEmail] = useState('');
@@ -62,7 +63,7 @@ export default function Login({navigation}) {
       const appid = await getAppid();
       console.log('get-token', appid);
       axios
-        .post('http://143.110.244.110/tija/frontuser/loginadmin', {
+        .post(`${baseUrl}loginadmin`, {
           email: email,
           password: password,
           appid: appid,
@@ -92,6 +93,7 @@ export default function Login({navigation}) {
             setID(id);
             signIn({token});
           }
+          console.log(type)
         })
         .catch(error => {
           if (error.response.status == 401) {

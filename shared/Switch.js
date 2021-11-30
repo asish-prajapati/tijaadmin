@@ -1,6 +1,7 @@
 import * as React from 'react';
 import {Switch as SwitchButton} from 'react-native-paper';
 import axios from 'axios';
+import {baseUrl} from '../apiConfig';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 const Switch = props => {
   const [isSwitchOn, setIsSwitchOn] = React.useState(false);
@@ -12,7 +13,7 @@ const Switch = props => {
     let userToken = await AsyncStorage.getItem('token');
     try {
       let response = await axios.get(
-        `http://143.110.244.110/tija/frontuser/stockupdate?product_id=${id}`,
+        `${baseUrl}stockupdate?product_id=${id}`,
         {
           headers: {
             Authorization: `Bearer ${userToken}`,

@@ -3,7 +3,7 @@ import {DataTable, Provider} from 'react-native-paper';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {ViewScreenStyle} from '../globalStyles';
 import {getBranch} from '../helpers/dataListHelpers';
-import {FlatList, ScrollView, View, Image, Text, StatusBar} from 'react-native';
+import {FlatList, ScrollView, View, Image, Text, StatusBar,RefreshControl} from 'react-native';
 import {AuthContext} from '../App';
 import ActionMenu from '../shared/ActionMenu';
 
@@ -15,9 +15,17 @@ const ViewUser = ({navigation}) => {
   const [rows, onRowsChange] = React.useState(rowsList[0]);
   const [data, setData] = React.useState([]);
   const from = page * rows;
-  const to = Math.min((page + 1) * rows, branches.length); 
+  const to = Math.min((page + 1) * rows, branches.length);
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getBranch(setBranches, refreshToken);
+    setRefreshing(false);
+  }, []);
+
   const getBranchList = () => {
     getBranch(setBranches, refreshToken);
   };
@@ -66,10 +74,10 @@ const ViewUser = ({navigation}) => {
                     }}>
                     Name
                   </DataTable.Title>
-                  <DataTable.Title
+                  {/* <DataTable.Title
                     style={{width: 50, justifyContent: 'center'}}>
                     Image
-                  </DataTable.Title>
+                  </DataTable.Title> */}
                   <DataTable.Title
                     style={{width: 200, justifyContent: 'center'}}>
                     Email
@@ -85,6 +93,9 @@ const ViewUser = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
+                  refreshControl={
+                    <RefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+                  }
                   renderItem={({item, index, separators}) => {
                     return (
                       <>
@@ -98,14 +109,14 @@ const ViewUser = ({navigation}) => {
                             numeric>
                             {item.name}
                           </DataTable.Cell>
-                          <DataTable.Cell
+                          {/* <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 50}]}
                             numeric>
                             <Image
                               source={{uri: item.image}}
                               style={{width: 40, height: 40}}
                             />
-                          </DataTable.Cell>
+                          </DataTable.Cell> */}
                           <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 200}]}
                             numeric>

@@ -1,6 +1,6 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {baseUrl} from '../apiConfig';
 const createFormData = (photo, body = {}) => {
   const data = new FormData();
   if (photo) {
@@ -23,7 +23,7 @@ const create_branch = async (imagefile, body) => {
   try {
     let response = await axios({
       method: 'POST',
-      url: 'http://143.110.244.110/tija/frontuser/create_branch',
+      url: `${baseUrl}create_branch`,
       data: createFormData(imagefile, body),
 
       headers: {
@@ -43,7 +43,7 @@ const create_category = async (imagefile, body) => {
   try {
     let response = await axios({
       method: 'POST',
-      url: 'http://143.110.244.110/tija/frontuser/create_category',
+      url: `${baseUrl}create_category`,
       data: createFormData(imagefile, body),
       headers: {
         Authorization: `Bearer ${userToken}`,
@@ -61,7 +61,7 @@ const create_counter = async (imagefile, body) => {
   try {
     let response = await axios({
       method: 'POST',
-      url: 'http://143.110.244.110/tija/frontuser/create_counter',
+      url: `${baseUrl}create_counter`,
       data: createFormData(imagefile, body),
       headers: {
         Authorization: `Bearer ${userToken}`,
@@ -79,7 +79,7 @@ const create_product = async (imagefile, body) => {
   try {
     let response = await axios({
       method: 'POST',
-      url: 'http://143.110.244.110/tija/frontuser/create_product',
+      url: `${baseUrl}create_product`,
       data: createFormData(imagefile, body),
 
       headers: {
@@ -93,12 +93,14 @@ const create_product = async (imagefile, body) => {
   }
 };
 
-const sell_product = async body => {
+const sell_product = async (body,setLoading) => {
   let userToken = await AsyncStorage.getItem('token');
+  console.log(userToken);
+  
   try {
     let response = await axios.post(
-      'http://143.110.244.110/tija/frontuser/create_guestsell',
-      body,
+      `${baseUrl}create_guestsell`,
+      body ,
       {
         headers: {
           Authorization: `Bearer ${userToken}`,
@@ -108,8 +110,11 @@ const sell_product = async body => {
 
     response = await response.data;
     return response;
+    // console.log(response)
   } catch (e) {
     alert(e);
+    setLoading(false)
+    
   }
 };
 
@@ -117,10 +122,12 @@ const getBranch = async (setUtype, setBranchList, setBranch) => {
   let userToken = await AsyncStorage.getItem('token');
   let userType = await AsyncStorage.getItem('type');
   let userID = await AsyncStorage.getItem('ID');
+  console.log("bye")
+  console.log(userID)
   setUtype(userType);
   if (userType == 'ADM') {
     axios
-      .get('http://143.110.244.110/tija/frontuser/viewbranch', {
+      .get(`${baseUrl}viewbranch`, {
         headers: {Authorization: `Bearer ${userToken}`},
       })
 
@@ -136,6 +143,7 @@ const getBranch = async (setUtype, setBranchList, setBranch) => {
   if (userType == 'branch') {
     setBranch(userID);
   }
+
 };
 
 const getBranchAndCat = async (
@@ -147,10 +155,12 @@ const getBranchAndCat = async (
   let userToken = await AsyncStorage.getItem('token');
   let userType = await AsyncStorage.getItem('type');
   let userID = await AsyncStorage.getItem('ID');
+  
+  console.log(userID)
   setUtype(userType);
   if (userType == 'ADM') {
     axios
-      .get('http://143.110.244.110/tija/frontuser/viewbranch', {
+      .get(`${baseUrl}viewbranch`, {
         headers: {Authorization: `Bearer ${userToken}`},
       })
 
@@ -164,9 +174,10 @@ const getBranchAndCat = async (
       .catch(err => console.log('getbranch', 'something went wrong' + err));
   }
   if (userType == 'branch') {
+    console.log(userID)
     setBranch(userID);
     axios
-      .get('http://143.110.244.110/tija/frontuser/viewcategory', {
+      .get(`${baseUrl}viewcategory`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
@@ -194,10 +205,11 @@ const getBranchAndCatForEditProduct = async (
   let userToken = await AsyncStorage.getItem('token');
   let userType = await AsyncStorage.getItem('type');
   let userID = await AsyncStorage.getItem('ID');
+  console.log(userID)
   setUtype(userType);
   if (userType == 'ADM') {
     axios
-      .get('http://143.110.244.110/tija/frontuser/viewbranch', {
+      .get(`${baseUrl}viewbranch`, {
         headers: {Authorization: `Bearer ${userToken}`},
       })
 
@@ -211,7 +223,7 @@ const getBranchAndCatForEditProduct = async (
       })
       .catch(err => console.log('viewbranch', 'something went wrong' + err));
     axios
-      .get('http://143.110.244.110/tija/frontuser/viewcategory', {
+      .get(`${baseUrl}viewcategory`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
@@ -230,7 +242,7 @@ const getBranchAndCatForEditProduct = async (
   if (userType == 'branch') {
     setBranch(userID);
     axios
-      .get('http://143.110.244.110/tija/frontuser/viewcategory', {
+      .get(`${baseUrl}viewcategory`, {
         headers: {
           Authorization: `Bearer ${userToken}`,
         },
@@ -256,7 +268,7 @@ const onBranchChange = async (branchid, setBranch, setCatList) => {
   };
   try {
     let response = await axios.get(
-      'http://143.110.244.110/tija/frontuser/viewcategory',
+      `${baseUrl}viewcategory`,
       data,
     );
     response = await response.data;
@@ -280,17 +292,20 @@ const onCatChange = async (category_id, setCategory, setProductList) => {
   };
   try {
     let response = await axios.get(
-      'http://143.110.244.110/tija/frontuser/viewproduct',
+      `${baseUrl}viewproduct`,
       data,
     );
     response = await response.data;
-    console.log(response);
-    res = response[0].product;
-    console.log(res);
-    let catsData = res.filter(item => item.category_id == category_id);
+    let res = response[0].product;
+    let catsData = res.filter(item => {
+      console.log(item.category_id, category_id);
+
+      return item.category_id == category_id;
+    });
     let cats = catsData.map(item => {
       return {id: item.id, name: item.name};
     });
+
     setProductList(cats);
   } catch (e) {
     alert(e);
@@ -309,7 +324,7 @@ const editBranch = async (id, imagefile, body) => {
   try {
     let response = await axios({
       method: 'POST',
-      url: `http://143.110.244.110/tija/frontuser/edit_branch/${id}`,
+      url: `${baseUrl}edit_branch/${id}`,
       data: createFormData(imagefile, body),
 
       headers: {

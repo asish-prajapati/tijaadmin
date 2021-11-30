@@ -1,6 +1,27 @@
 import React, {useEffect, useState} from 'react';
-import {View, Text as TextRN, StyleSheet} from 'react-native';
+import NetInfo from '@react-native-community/netinfo';
 
+import {
+  ActivityIndicator,
+  Platform,
+  StyleSheet,
+  Text,
+  View,
+  Button,
+  ScrollView,
+  DeviceEventEmitter,
+  NativeEventEmitter,
+  Switch,
+  TouchableOpacity,
+  Dimensions,
+  ToastAndroid,
+} from 'react-native';
+import {
+  BluetoothEscposPrinter,
+  BluetoothManager,
+  BluetoothTscPrinter,
+} from 'react-native-bluetooth-escpos-printer';
+import DeviceInfo from 'react-native-device-info';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import messaging from '@react-native-firebase/messaging';
 import {createStackNavigator} from '@react-navigation/stack';
@@ -12,7 +33,10 @@ import {
 import Login from './Screens/Login';
 import DrawerNavigator from './navigation/DrawerNavigator';
 import Loading from './Screens/Loading';
+import SetupPrinter from './Screens/SetupPrinter';
 import SingleOrder from './Screens/SingleOrder';
+import InternetConnection from './Screens/InternetConnection';
+
 import SingleCounterOrder from './Screens/SingleCounterOrder';
 import UserTransaction from './Screens/UserTransaction';
 import AwesomeAlert from 'react-native-awesome-alerts';
@@ -28,9 +52,19 @@ const StateContext = React.createContext();
 const Stack = createStackNavigator();
 
 function App() {
+  _listeners = [];
   const initialState = {
     isLoading: true,
     userToken: null,
+    devices: null,
+    pairedDs: [],
+    foundDs: [],
+    bleOpened: false,
+    loading: true,
+    boundAddress: '',
+    boundName: '',
+    debugMsg: '',
+    isTablet: false,
   };
   const reducer = (prevState, action) => {
     switch (action.type) {
@@ -57,6 +91,41 @@ function App() {
           ...prevState,
           isLoading: true,
         };
+      case 'BLEOPENED':
+        return {
+          ...prevState,
+          bleOpened: action.bleOpened,
+        };
+      case 'SET_DEVICES':
+        return {
+          ...prevState,
+          devices: action.devices,
+        };
+      case 'SET_PAIRED':
+        return {
+          ...prevState,
+          pairedDs: action.pairedDs,
+        };
+      case 'SET_FOUND':
+        return {
+          ...prevState,
+          foundDs: action.foundDs,
+        };
+      case 'SET_BOUNDADDRESS':
+        return {
+          ...prevState,
+          boundAddress: action.boundAddress,
+        };
+      case 'SET_BOUND_NAME':
+        return {
+          ...prevState,
+          boundName: action.boundName,
+        };
+      case 'ISTABLET':
+        return {
+          ...prevState,
+          isTablet: action.isTablet,
+        };
     }
   };
   // const navigation = useNavigation();
@@ -69,25 +138,210 @@ function App() {
   const [initialRoute, setInitialRoute] = useState('Drawer');
   const [alertRightText, setAlertRightText] = useState('');
   const [orderid, setorderid] = useState('');
+  const [id, setid] = useState('')
   const [action1Type, setAction1Type] = useState('');
   const [action2Type, setAction2Type] = useState('');
   const [state, dispatch] = React.useReducer(reducer, initialState);
+  const [offline, setOfflineStatus] = useState(false);
 
+  useEffect(() => {
+    const removeNetInfoSubscription = NetInfo.addEventListener(state => {
+      console.log('Connection type - ', state.type);
+      console.log('Is connected? - ', state.isConnected);
+      const offline = !(state.isConnected && state.isInternetReachable);
+      setOfflineStatus(offline);
+    });
+
+    return () => removeNetInfoSubscription();
+  }, []);
+  //btprinterStates
+  // const [devices, setDevices] = useState(null);
+  // const [pairedDs, setPairedDs] = useState([]);
+  // const [foundDs, setFoundDs] = useState([]);
+  // const [bleOpened, setBleOpened] = useState(false);
+  // const [boundAddress, setBoundAddress] = useState('hvjhjj');
+  const _deviceAlreadPaired = rsp => {
+    var ds = null;
+    if (typeof rsp.devices == 'object') {
+      ds = rsp.devices;
+    } else {
+      try {
+        ds = JSON.parse(rsp.devices);
+      } catch (e) {}
+    }
+    if (ds && ds.length) {
+      let pared = [];
+      pared = pared.concat(ds || []);
+      dispatch({type: 'SET_PAIRED', pairedDs: pared});
+      // this.setState({
+      //     pairedDs:pared
+      // });
+    }
+  };
+
+  const _deviceFoundEvent = rsp => {
+    //alert(JSON.stringify(rsp))
+    var r = null;
+    try {
+      if (typeof rsp.device == 'object') {
+        r = rsp.device;
+      } else {
+        r = JSON.parse(rsp.device);
+      }
+    } catch (e) {
+      //alert(e.message);
+      //ignore
+    }
+    //alert('f')
+    if (r) {
+      let found = [];
+      if (found.findIndex) {
+        let duplicated = found.findIndex(function (x) {
+          return x.address == r.address;
+        });
+        //CHECK DEPLICATED HERE...
+        if (duplicated == -1) {
+          found.push(r);
+          dispatch({type: 'SET_FOUND', foundDs: found});
+          // this.setState({
+          //     foundDs: found
+          // });
+        }
+      }
+    }
+  };
   const authContext = React.useMemo(
     () => ({
       signIn: async data => {
         dispatch({type: 'SIGN_IN', token: data.token});
       },
-      signOut: () => dispatch({type: 'SIGN_OUT'}),
+      signOut: async () =>
+      {
+      dispatch({type: 'SIGN_OUT'})
+    //  await AsyncStorage.clear()
+    await AsyncStorage.removeItem('token')
+    await AsyncStorage.removeItem('id')
+
+
+      },
       refreshToken: async data => {
         dispatch({type: 'RESTORE_TOKEN', token: data.token});
       },
       loadingTrue: () => {
         dispatch({type: 'LOADING_TRUE'});
       },
+      loadPairedDs: async pairedDslist => {
+        dispatch({type: 'SET_PAIRED', pairedDs: pairedDslist});
+      },
+      setBt: async bt => {
+        dispatch({type: 'BLEOPENED', bleOpened: bt});
+      },
+      setBoundAddress: async boundAddress => {
+        dispatch({type: 'SET_BOUNDADDRESS', boundAddress: boundAddress});
+      },
+      setBoundName: async boundName => {
+        dispatch({type: 'SET_BOUND_NAME', boundName: boundName});
+      },
     }),
     [],
   );
+  useEffect(() => {
+    const isTablet = DeviceInfo.isTablet();
+    dispatch({type: 'ISTABLET', isTablet: isTablet});
+  }, []);
+
+  useEffect(() => {
+    BluetoothManager.isBluetoothEnabled().then(
+      enabled => {
+        dispatch({type: 'BLEOPENED', bleOpened: Boolean(enabled)});
+        if (enabled == true) {
+          console.log('enabled');
+        } else {
+          console.log('disabled');
+        }
+      },
+      err => {
+        print(err);
+      },
+    );
+
+    if (Platform.OS === 'ios') {
+      let bluetoothManagerEmitter = new NativeEventEmitter(BluetoothManager);
+      _listeners.push(
+        bluetoothManagerEmitter.addListener(
+          BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED,
+          rsp => {
+            _deviceAlreadPaired(rsp);
+          },
+        ),
+      );
+      _listeners.push(
+        bluetoothManagerEmitter.addListener(
+          BluetoothManager.EVENT_DEVICE_FOUND,
+          rsp => {
+            _deviceFoundEvent(rsp);
+          },
+        ),
+      );
+      _listeners.push(
+        bluetoothManagerEmitter.addListener(
+          BluetoothManager.EVENT_CONNECTION_LOST,
+          () => {
+            dispatch({type: 'SET_BOUNDADDRESS', boundAddress: ''});
+
+            // this.setState({
+            //   name: '',
+            //   boundAddress: '',
+            // });
+          },
+        ),
+      );
+    } else if (Platform.OS === 'android') {
+      console.log('android');
+      _listeners.push(
+        DeviceEventEmitter.addListener(
+          BluetoothManager.EVENT_DEVICE_ALREADY_PAIRED,
+          rsp => {
+            console.log(res.devices);
+            console.log('paired');
+
+            _deviceAlreadPaired(rsp);
+          },
+        ),
+      );
+      _listeners.push(
+        DeviceEventEmitter.addListener(
+          BluetoothManager.EVENT_DEVICE_FOUND,
+          rsp => {
+            _deviceFoundEvent(rsp);
+          },
+        ),
+      );
+      _listeners.push(
+        DeviceEventEmitter.addListener(
+          BluetoothManager.EVENT_CONNECTION_LOST,
+          () => {
+            dispatch({type: 'SET_BOUNDADDRESS', boundAddress: ''});
+            // this.setState({
+            //   name: '',
+            //   boundAddress: '',
+            // });
+          },
+        ),
+      );
+      _listeners.push(
+        DeviceEventEmitter.addListener(
+          BluetoothManager.EVENT_BLUETOOTH_NOT_SUPPORT,
+          () => {
+            ToastAndroid.show(
+              'Device Not Support Bluetooth !',
+              ToastAndroid.LONG,
+            );
+          },
+        ),
+      );
+    }
+  }, []);
 
   useEffect(() => {
     const startAsync = async () => {
@@ -150,7 +404,7 @@ function App() {
       // }
     } else if (action1Type == 'handle2') {
       console.log('clicked for Accept counter');
-      let response = await acceptCounterFromNotification(orderid);
+      let response = await acceptCounterFromNotification(id,orderid);
       console.log(response);
       setInitialRoute('ViewOrder');
 
@@ -169,6 +423,7 @@ function App() {
       let action1 = remoteMessage.data['action1'];
       let action2 = remoteMessage.data['action2'];
       let orderid = remoteMessage.data['orderId'];
+      let id = remoteMessage.data['id']
       let msg = remoteMessage.notification.body;
       let title = remoteMessage.notification.title;
 
@@ -176,6 +431,7 @@ function App() {
         setAlertType1(true);
         setAlertLeftText('Accept');
         setorderid(orderid);
+        setid(id)
         setAction1Type('handle1');
         setAlertMsg(msg);
         setAlertTitle(title);
@@ -183,6 +439,8 @@ function App() {
         setAlertType2(true);
         setAlertLeftText('Accept');
         setorderid(orderid);
+        setid(id)
+
         setAlertMsg(msg);
         setAlertTitle(title);
         setAction1Type('handle2');
@@ -291,7 +549,12 @@ function App() {
           <Stack.Navigator
             screenOptions={{headerShown: false}}
             initialRouteName={initialRoute}>
-            {state.isLoading ? (
+            {offline ? (
+              <Stack.Screen
+                name="InternetConnection"
+                component={InternetConnection}
+              />
+            ) : state.isLoading ? (
               <Stack.Screen name="Loading" component={Loading} />
             ) : !state.userToken ? (
               <Stack.Screen name="Login" component={Login} />
@@ -307,6 +570,7 @@ function App() {
                   name="UserTransaction"
                   component={UserTransaction}
                 />
+                <Stack.Screen name="SetupPrinter" component={SetupPrinter} />
               </>
             )}
           </Stack.Navigator>

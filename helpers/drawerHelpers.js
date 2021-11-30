@@ -1,10 +1,10 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {baseUrl} from '../apiConfig';
 const getProfile = async (setName, setEmail, setImage, refreshToken) => {
   let userToken = await AsyncStorage.getItem('token');
   axios
-    .get('http://143.110.244.110/tija/frontuser/adminprofile', {
+    .get(`${baseUrl}adminprofile`, {
       headers: {Authorization: `Bearer ${userToken}`},
     })
     .then(res => {

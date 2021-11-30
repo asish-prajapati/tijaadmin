@@ -2,11 +2,13 @@ import React, {useEffect, useContext, useState} from 'react';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {
+  // ScrollView,
   View,
   StyleSheet,
   StatusBar,
   Text,
   TouchableOpacity,
+  Button,RefreshControl
 } from 'react-native';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconFs from 'react-native-vector-icons/FontAwesome5';
@@ -14,11 +16,12 @@ import IconMi from 'react-native-vector-icons/MaterialIcons';
 import {getDash} from '../helpers/dashboardHelpers';
 import {AuthContext, StateContext} from '../App';
 import Loading from './Loading';
+import { ScrollView } from 'react-native-gesture-handler';
 
 export default function Dashboard({navigation}) {
   const {refreshToken, loadingTrue} = useContext(AuthContext);
   const {state} = useContext(StateContext);
-
+  const [refreshing, setRefreshing] = React.useState(false);
   const [dashData, setDashData] = useState({
     branch: 0,
     counter: 0,
@@ -27,6 +30,8 @@ export default function Dashboard({navigation}) {
   });
   const [loading, setLoading] = useState(true);
   const [uType, setUtype] = useState('');
+   
+
   const Card = props => {
     const {title, count, iconname, navigationRoute} = props;
     return (
@@ -108,12 +113,18 @@ export default function Dashboard({navigation}) {
           // counterOrders:dataObj.totalcounterorder
         });
         setLoading(false);
-      } catch {
+      } catch (e) {
         alert('Error in Dashboard api');
       }
     });
     return unsubscribe;
   }, []);
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getDash(setDashData, refreshToken);
+    setRefreshing(false);
+  }, []);
+
 
   return (
     <>
@@ -135,6 +146,9 @@ export default function Dashboard({navigation}) {
                 DashBoard
               </Text>
             </View>
+            <ScrollView style={{flex : 1 , backgroundColor: 'white',}} refreshControl={
+            <RefreshControl  refreshing={refreshing} onRefresh={onRefresh} />
+          }>
             <View style={styles.content}>
               {uType == 'ADM' ? (
                 dashData.branch > 0 ? (
@@ -205,6 +219,30 @@ export default function Dashboard({navigation}) {
                 />
               )}
             </View>
+            </ScrollView>
+          
+          {
+            uType == 'ADM' || uType == 'branch'?
+            <>
+            <View
+                style={{flexDirection: 'row', justifyContent: 'space-between'}}>
+                <Text>Connected Device Name :</Text>
+                <Text>
+                  {!state.boundName ? 'No device Connected' : state.boundName}
+                </Text>
+              </View>
+              <View>
+                <Button
+                  color="coral"
+                  title="SetUp Printer"
+                  onPress={() => {
+                    navigation.navigate('SetupPrinter');
+                  }}
+                />
+              </View>
+            </> : null
+          }
+         
           </View>
         </>
       )}

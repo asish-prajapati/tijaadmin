@@ -27,9 +27,9 @@ class ActionMenuCOrder extends React.PureComponent {
     this._menu.show();
   };
 
-  handle_accept = async (order_id, getCOrdersList) => {
+  handle_accept = async (order_id,id, getCOrdersList) => {
     console.log(order_id);
-    let response = await acceptCounter(order_id);
+    let response = await acceptCounter(order_id,id);
     alert(response[0].message);
     getCOrdersList();
   };
@@ -43,8 +43,8 @@ class ActionMenuCOrder extends React.PureComponent {
     alert(response[0].message);
     getCOrdersList();
   };
-  handle_ready = async (order_id, getCOrdersList) => {
-    let response = await readyCounter(order_id);
+  handle_ready = async (order_id,id, getCOrdersList) => {
+    let response = await readyCounter(order_id,id);
     alert(response[0].message);
     getCOrdersList();
   };
@@ -63,6 +63,7 @@ class ActionMenuCOrder extends React.PureComponent {
             onPress={() => {
               this.handle_accept(
                 this.props.order_id,
+                this.props.id,
                 this.props.getCOrdersList,
               );
             }}
@@ -75,7 +76,7 @@ class ActionMenuCOrder extends React.PureComponent {
             mode="contained"
             color="green"
             onPress={() => {
-              this.handle_ready(this.props.order_id, this.props.getCOrdersList);
+              this.handle_ready(this.props.order_id,this.props.id, this.props.getCOrdersList);
             }}
             labelStyle={{color: 'white'}}>
             Ready

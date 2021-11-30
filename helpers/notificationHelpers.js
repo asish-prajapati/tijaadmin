@@ -1,13 +1,13 @@
 import axios from 'axios';
 import AsyncStorage from '@react-native-async-storage/async-storage';
-
+import {baseUrl} from '../apiConfig';
 const acceptFromNotification = async order_id => {
   let userToken = await AsyncStorage.getItem('token');
   console.log(userToken, order_id);
 
   try {
     let response = await axios.get(
-      `http://143.110.244.110/tija/frontuser/acceptorder?order_id=${order_id}`,
+      `${baseUrl}acceptorder?order_id=${order_id}`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -35,12 +35,12 @@ const acceptFromNotification = async order_id => {
     alert(error);
   }
 };
-const acceptCounterFromNotification = async order_id => {
+const acceptCounterFromNotification = async( id,orderid )=> {
   let userToken = await AsyncStorage.getItem('token');
-  console.log(order_id, userToken);
+  console.log(id,orderid, userToken);
   try {
     let response = await axios.get(
-      `http://143.110.244.110/tija/frontuser/acceptcounter?order_id=${order_id}`,
+      `${baseUrl}acceptcounter?id=${id}&order_id=${orderid}`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -50,6 +50,7 @@ const acceptCounterFromNotification = async order_id => {
 
     return response;
   } catch (error) {
+    console.log(error)
     if (error.response.status == 401) {
       const clearAll = async () => {
         try {
@@ -74,7 +75,7 @@ const cancleFromNotification = async id => {
 
   try {
     let response = await axios.get(
-      `http://143.110.244.110/tija/frontuser/cancle_order?order_id=${id}`,
+      `${baseUrl}cancle_order?order_id=${id}`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},

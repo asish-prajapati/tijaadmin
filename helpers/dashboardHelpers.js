@@ -1,5 +1,6 @@
 import AsyncStorage from '@react-native-async-storage/async-storage';
 import axios from 'axios';
+import {baseUrl} from '../apiConfig';
 
 const getDash = async refreshToken => {
   let userToken;
@@ -8,7 +9,7 @@ const getDash = async refreshToken => {
   userType = await AsyncStorage.getItem('type');
   try {
     let response = await axios.get(
-      `http://143.110.244.110/tija/frontuser/admindashboard?type=${userType}`,
+      `${baseUrl}admindashboard?type=${userType}`,
 
       {
         headers: {Authorization: `Bearer ${userToken}`},
@@ -16,23 +17,28 @@ const getDash = async refreshToken => {
     );
     return response.data[0];
   } catch (error) {
-    if (error.response.status == 401) {
-      const clearAll = async () => {
-        try {
-          await AsyncStorage.clear();
+    if (error.response == undefined) {
+      alert('Something went wrong');
+    } else {
+      if (error.response.status == 401) {
+        const clearAll = async () => {
+          try {
+            await AsyncStorage.clear();
 
-          refreshToken({token: null});
-        } catch (e) {
-          refreshToken({token: null});
-          alert(e);
-        }
-      };
+            refreshToken({token: null});
+          } catch (e) {
+            refreshToken({token: null});
+            alert(e);
+          }
+        };
 
-      clearAll();
+        clearAll();
+      }
+      if (error.response.status == 500) {
+        alert('Something Went Wrong , Code:500');
+      }
     }
-    if (error.response.status == 500) {
-      alert('500 error');
-    }
+
     // alert(error);
   }
   // .then(response => {

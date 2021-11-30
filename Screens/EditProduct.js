@@ -23,6 +23,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CreateScreenStyle} from '../globalStyles';
 import {Picker} from '@react-native-picker/picker';
 import theme from '../theme/theme';
+import { baseUrl } from '../apiConfig';
 
 export default function EditProduct({navigation, route}) {
   const {item} = route.params;
@@ -83,7 +84,7 @@ export default function EditProduct({navigation, route}) {
       console.log(userToken);
       axios({
         method: 'POST',
-        url: 'http://143.110.244.110/tija/frontuser/edit_product',
+        url: `${baseUrl}edit_product`,
         data: createFormData(imagefile, {
           branch_id: branch,
           id: item.id,

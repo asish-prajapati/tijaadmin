@@ -2,14 +2,16 @@ import React, {useState, useContext, useEffect} from 'react';
 import Icon from 'react-native-vector-icons/MaterialCommunityIcons';
 import {DrawerItem, DrawerContentScrollView} from '@react-navigation/drawer';
 import {View, StyleSheet, TouchableOpacity} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+
 import {getProfile, getType} from '../helpers/drawerHelpers';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import IconMat from 'react-native-vector-icons/MaterialIcons';
 import IconEnt from 'react-native-vector-icons/Entypo';
 import {List} from 'react-native-paper';
 import {AuthContext} from '../App';
-
+import axios from 'axios';
+import AsyncStorage from '@react-native-async-storage/async-storage';
+import {baseUrl} from '../apiConfig';
 import {
   Provider as PaperProvider,
   useTheme,
@@ -40,6 +42,31 @@ const DrawerContent = props => {
   const [image, setImage] = useState('');
 
   const {signOut, refreshToken} = useContext(AuthContext);
+  const handleLogOut = async () => {
+    // signOut();
+    let userToken = await AsyncStorage.getItem('token');
+
+    try {
+      let response = await axios.get(
+        `${baseUrl}logoutadmin`,
+
+        {
+          headers: {
+            Authorization: `Bearer ${userToken}`,
+          },
+        },
+      );
+
+      response = await response.data;
+      if(response[0].success==true) {
+        signOut();
+      }
+      console.log(response);
+    } catch (e) {
+      console.log(e)
+      alert(e);
+    }
+  };
   React.useEffect(() => {
     const unsubscribe = props.navigation.addListener('focus', () => {
       getType(setUtype);
@@ -447,10 +474,7 @@ const DrawerContent = props => {
           )}
         </Drawer.Section>
         <Drawer.Section>
-          <TouchableRipple
-            onPress={() => {
-              signOut();
-            }}>
+          <TouchableRipple onPress={handleLogOut}>
             <View style={styles.preference}>
               <IconAnt name="logout" size={20} />
               <Text style={{fontSize: 20, fontWeight: 'bold', marginLeft: 10}}>

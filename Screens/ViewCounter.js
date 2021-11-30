@@ -3,7 +3,7 @@ import {DataTable, Provider} from 'react-native-paper';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {ViewScreenStyle} from '../globalStyles';
 import {getCounters} from '../helpers/dataListHelpers';
-import {FlatList, ScrollView, View, Image, Text, StatusBar} from 'react-native';
+import {FlatList, ScrollView, View, Image, Text, StatusBar,RefreshControl} from 'react-native';
 import {AuthContext} from '../App';
 import ActionMenu from '../shared/ActionMenu';
 
@@ -18,6 +18,14 @@ const ViewCounter = ({navigation}) => {
   const to = Math.min((page + 1) * rows, counters.length);
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getCounters(setCounters, refreshToken);
+    setRefreshing(false);
+  }, []);
+
   const getCounterList = () => {
     getCounters(setCounters, refreshToken);
   };
@@ -66,15 +74,22 @@ const ViewCounter = ({navigation}) => {
                   </DataTable.Title>
                   <DataTable.Title
                     style={{
+                      width: 150,
+                      justifyContent: 'center',
+                    }}>
+                    Category
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{
                       width: 200,
                       justifyContent: 'center',
                     }}>
                     Name
                   </DataTable.Title>
-                  <DataTable.Title
+                  {/* <DataTable.Title
                     style={{width: 50, justifyContent: 'center'}}>
                     Image
-                  </DataTable.Title>
+                  </DataTable.Title> */}
                   <DataTable.Title
                     style={{width: 200, justifyContent: 'center'}}>
                     Email
@@ -90,6 +105,12 @@ const ViewCounter = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   renderItem={({item, index, separators}) => {
                     return (
                       <>
@@ -104,18 +125,23 @@ const ViewCounter = ({navigation}) => {
                             {item.branchname}
                           </DataTable.Cell>
                           <DataTable.Cell
+                            style={[ViewScreenStyle.cellStyle, {width: 150}]}
+                            numeric>
+                            {item.category_name}
+                          </DataTable.Cell>
+                          <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 200}]}
                             numeric>
                             {item.name}
                           </DataTable.Cell>
-                          <DataTable.Cell
+                          {/* <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 50}]}
                             numeric>
                             <Image
                               source={{uri: item.image}}
                               style={{width: 40, height: 40}}
                             />
-                          </DataTable.Cell>
+                          </DataTable.Cell> */}
                           <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 200}]}
                             numeric>

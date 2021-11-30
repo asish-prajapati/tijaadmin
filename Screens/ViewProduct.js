@@ -3,6 +3,7 @@ import {DataTable, Provider} from 'react-native-paper';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import ActionMenu from '../shared/ActionMenu';
 import Switch from '../shared/Switch';
+
 import {
   FlatList,
   ScrollView,
@@ -10,7 +11,8 @@ import {
   Image,
   StyleSheet,
   Text,
-  StatusBar,
+  StatusBar
+  ,RefreshControl
 } from 'react-native';
 import {AuthContext} from '../App';
 import {getProducts} from '../helpers/dataListHelpers';
@@ -26,6 +28,13 @@ const ViewProduct = ({navigation}) => {
   const to = Math.min((page + 1) * rows, products.length);
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getProducts(setProducts, refreshToken);
+    setRefreshing(false);
+  }, []);
 
   const getProductList = () => {
     getProducts(setProducts, refreshToken);
@@ -106,10 +115,10 @@ const ViewProduct = ({navigation}) => {
                     style={{width: 50, justifyContent: 'center'}}>
                     Price
                   </DataTable.Title>
-                  <DataTable.Title
+                  {/* <DataTable.Title
                     style={{width: 50, justifyContent: 'center'}}>
                     Image
-                  </DataTable.Title>
+                  </DataTable.Title> */}
 
                   <DataTable.Title
                     style={{width: 150, justifyContent: 'center'}}>
@@ -118,6 +127,12 @@ const ViewProduct = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   renderItem={({item, index, separators}) => {
                     return (
                       <>
@@ -155,14 +170,14 @@ const ViewProduct = ({navigation}) => {
                             {item.price}
                           </DataTable.Cell>
 
-                          <DataTable.Cell
+                          {/* <DataTable.Cell
                             style={[styles.cellStyle, {width: 50}]}
                             numeric>
                             <Image
                               source={{uri: item.image}}
                               style={{width: 40, height: 40}}
                             />
-                          </DataTable.Cell>
+                          </DataTable.Cell> */}
 
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 150}]}>

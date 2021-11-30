@@ -20,6 +20,7 @@ import AsyncStorage from '@react-native-async-storage/async-storage';
 import {CreateScreenStyle} from '../globalStyles';
 import {Picker} from '@react-native-picker/picker';
 import theme from '../theme/theme';
+import { baseUrl } from '../apiConfig';
 
 export default function EditCategory({navigation, route}) {
   const {item} = route.params;
@@ -69,7 +70,7 @@ export default function EditCategory({navigation, route}) {
       console.log(item.id, branch, name);
       axios({
         method: 'POST',
-        url: 'http://143.110.244.110/tija/frontuser/edit_category',
+        url: `${baseUrl}edit_category`,
         data: createFormData(imagefile, {
           id: item.id,
           branch_id: branch,

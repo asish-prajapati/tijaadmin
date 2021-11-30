@@ -7,7 +7,7 @@ import {
   View,
   StyleSheet,
   Text,
-  StatusBar,
+  StatusBar,RefreshControl
 } from 'react-native';
 
 import {AuthContext} from '../App';
@@ -25,6 +25,13 @@ const ViewGuestSell = ({navigation}) => {
   const to = Math.min((page + 1) * rows, orders.length);
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
+  const [refreshing, setRefreshing] = React.useState(false);
+
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getGuestOrders(setOrders, refreshToken);
+    setRefreshing(false);
+  }, []);
   const getGuestOrdersList = () => {
     getGuestOrders(setOrders, refreshToken);
   };
@@ -66,12 +73,16 @@ const ViewGuestSell = ({navigation}) => {
                     SNo.
                   </DataTable.Title>
                   <DataTable.Title
-                    style={{width: 150, justifyContent: 'center'}}>
-                    View Product
+                    style={{width: 200, justifyContent: 'center'}}>
+                    order id
                   </DataTable.Title>
                   <DataTable.Title
                     style={{width: 300, justifyContent: 'center'}}>
                     Action
+                  </DataTable.Title>
+                  <DataTable.Title
+                    style={{width: 150, justifyContent: 'center'}}>
+                    View Product
                   </DataTable.Title>
                   <DataTable.Title
                     style={{width: 100, justifyContent: 'center'}}>
@@ -88,10 +99,7 @@ const ViewGuestSell = ({navigation}) => {
                     style={{width: 150, justifyContent: 'center'}}>
                     Order Status
                   </DataTable.Title>
-                  <DataTable.Title
-                    style={{width: 200, justifyContent: 'center'}}>
-                    order id
-                  </DataTable.Title>
+
                   <DataTable.Title
                     style={{width: 200, justifyContent: 'center'}}>
                     Payment id
@@ -107,6 +115,12 @@ const ViewGuestSell = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   keyExtractor={(item, index) => index}
                   renderItem={({item, index, separators}) => {
                     return (
@@ -115,6 +129,19 @@ const ViewGuestSell = ({navigation}) => {
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 50}]}>
                             {index + 1}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 200}]}>
+                            {item.order_id}
+                          </DataTable.Cell>
+                          <DataTable.Cell
+                            style={[styles.cellStyle, {width: 300}]}>
+                            <ActionMenuGSOrder
+                              item={item}
+                              id={item.order_id}
+                              status={item.status}
+                              getGuestOrdersList={getGuestOrdersList}
+                            />
                           </DataTable.Cell>
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 150}]}>
@@ -130,14 +157,6 @@ const ViewGuestSell = ({navigation}) => {
                             </Button>
                           </DataTable.Cell>
                           <DataTable.Cell
-                            style={[styles.cellStyle, {width: 300}]}>
-                            <ActionMenuGSOrder
-                              id={item.id}
-                              status={item.status}
-                              getGuestOrdersList={getGuestOrdersList}
-                            />
-                          </DataTable.Cell>
-                          <DataTable.Cell
                             style={[styles.cellStyle, {width: 100}]}
                             numeric>
                             {item.productprice}
@@ -151,10 +170,7 @@ const ViewGuestSell = ({navigation}) => {
                             style={[styles.cellStyle, {width: 150}]}>
                             {item.status}
                           </DataTable.Cell>
-                          <DataTable.Cell
-                            style={[styles.cellStyle, {width: 200}]}>
-                            {item.order_id}
-                          </DataTable.Cell>
+
                           <DataTable.Cell
                             style={[styles.cellStyle, {width: 200}]}>
                             {item.payment_id}

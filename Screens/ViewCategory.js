@@ -3,26 +3,39 @@ import {DataTable, Provider} from 'react-native-paper';
 import IconAnt from 'react-native-vector-icons/AntDesign';
 import {ViewScreenStyle} from '../globalStyles';
 import {getCategory} from '../helpers/dataListHelpers';
-import {FlatList, ScrollView, View, Image, Text, StatusBar} from 'react-native';
-import {AuthContext} from '../App';
+import {FlatList, ScrollView, View, Image, Text, StatusBar,RefreshControl} from 'react-native';
+import {AuthContext, StateContext} from '../App';
 import ActionMenu from '../shared/ActionMenu';
 const CategoryContext = React.createContext();
 
 const ViewCategory = ({navigation}) => {
   const [category, setCategory] = useState([]);
   const {refreshToken} = useContext(AuthContext);
+  const {state} = useContext(StateContext);
   const [page, setPage] = React.useState(0);
-  const rowsList = [10, 15, 20];
+  const rowsList = [12, 15, 20];
   const [rows, onRowsChange] = React.useState(rowsList[0]);
   const [data, setData] = React.useState([]);
   const from = page * rows;
   const to = Math.min((page + 1) * rows, category.length);
   var trimStart = page * rows;
   var trimEnd = trimStart + rows;
+  const [refreshing, setRefreshing] = React.useState(false);
+  const onRefresh = React.useCallback(async () => {
+    setRefreshing(true);
+    getCategory(setCategory, refreshToken);
+    setRefreshing(false);
+  }, []);
+
 
   const getCategoryList = () => {
     getCategory(setCategory, refreshToken);
   };
+  useEffect(() => {
+    if (state.isTablet) {
+      onRowsChange(16);
+    }
+  }, []);
 
   useEffect(() => {
     navigation.addListener('focus', async () => {
@@ -70,10 +83,10 @@ const ViewCategory = ({navigation}) => {
                     style={{width: 200, justifyContent: 'center'}}>
                     Name
                   </DataTable.Title>
-                  <DataTable.Title
+                  {/* <DataTable.Title
                     style={{width: 50, justifyContent: 'center'}}>
                     Image
-                  </DataTable.Title>
+                  </DataTable.Title> */}
 
                   <DataTable.Title
                     style={{width: 150, justifyContent: 'center'}}>
@@ -82,6 +95,12 @@ const ViewCategory = ({navigation}) => {
                 </DataTable.Header>
                 <FlatList
                   data={data}
+                  refreshControl={
+                    <RefreshControl
+                      refreshing={refreshing}
+                      onRefresh={onRefresh}
+                    />
+                  }
                   renderItem={({item, index, separators}) => {
                     return (
                       <>
@@ -100,14 +119,14 @@ const ViewCategory = ({navigation}) => {
                             numeric>
                             {item.name}
                           </DataTable.Cell>
-                          <DataTable.Cell
+                          {/* <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 50}]}
                             numeric>
                             <Image
                               source={{uri: item.image}}
                               style={{width: 40, height: 40}}
                             />
-                          </DataTable.Cell>
+                          </DataTable.Cell> */}
 
                           <DataTable.Cell
                             style={[ViewScreenStyle.cellStyle, {width: 150}]}>
@@ -139,7 +158,7 @@ const ViewCategory = ({navigation}) => {
                 category.length
               }`}
               showFastPaginationControls
-              // numberOfItemsPerPageList={rowsList}
+              numberOfItemsPerPageList={rowsList}
               numberOfItemsPerPage={rows}
               onItemsPerPageChange={onRowsChange}
               selectPageDropdownLabel={'Rows per page'}
